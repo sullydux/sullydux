@@ -4,4 +4,4 @@ I'm currently making [Scratch](https://scratch.mit.edu/users/sullydux/) projects
 
 [Secret Warfare on Github](https://sullydux.github.io/Secret-Warfare/)
 
-[SullyEngineer -- Parts mod](https://sullydux.github.io/SullyEngineer/)
+[SullyEngineer -- Parts mod](https://github.com/sullydux/SullyEngineer)
