@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
-  <title>Sullydux's Project</title>
+  <title>Sullydux's Projects</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -136,6 +136,7 @@
 
     .details {
       min-width: 0;
+      width: 100%;
     }
 
     .details h3 {
@@ -144,10 +145,18 @@
       line-height: 1.2;
     }
 
-    .version {
-      margin-top: 0.4rem;
+    .desc {
+      margin-top: 0.55rem;
+      color: var(--text);
+      font-size: 1rem;
+      line-height: 1.65;
+    }
+
+    .devices {
+      margin-top: 0.55rem;
       color: var(--muted);
-      font-size: 0.9rem;
+      font-size: 0.88rem;
+      letter-spacing: 0.02em;
     }
 
     footer {
@@ -181,7 +190,7 @@
 </head>
 <body>
   <header>
-    <h1>Sullydux's Project</h1>
+    <h1>Sullydux's Projects</h1>
   </header>
 
   <main>
@@ -202,18 +211,20 @@
   <script>
     const projects = [
       {
-        icon: "Curse/Icon.png",
+        icon: "curse.png",
         alt: "Forsaken Legends: Cursed Isle icon",
         name: "Forsaken Legends: Cursed Isle",
-        version: "Version: 2.18.59 | Computer, PC, and Controller",
-        link: "Curse/"
+        devices: "Computer, PC, and Controller",
+        desc: "Step into a vibrant pixel-art world of adventure, mystery, and danger. Battle powerful bosses, face off against formidable enemies, and befriend unique characters as you explore diverse environments. Delve into hidden caves, uncover ancient secrets, and solve intriguing mysteries. With a rich, immersive world teeming with animals and challenges, your journey will test your skills, wit, and courage at every turn. Will you uncover the truth and conquer the unknown?",
+        link: "https://sullydux.github.io/Curse/"
       },
       {
-        icon: "Secret-Warfare/icon.png",
+        icon: "secret.png",
         alt: "Secret Warfare icon",
         name: "Secret Warfare",
-        version: "Mobile, Tablet, Computer, and PC",
-        link: "Secret-Warfare/"
+        devices: "Mobile, Tablet, Computer, and PC",
+        desc: "In a world of secrets and shadows, only the unseen survive. As an elite agent in the Phantom Strike Division, you'll infiltrate, sabotage, and vanish without a trace. With stealth-driven levels and high-tech gear, every mission is a test of precision and nerve. Are you ready to step into the shadows and rewrite the rules of espionage?",
+        link: "https://sullydux.github.io/Secret-Warfare/"
       }
     ];
 
@@ -236,7 +247,8 @@
         </div>
         <div class="details">
           <h3>${project.name}</h3>
-          <div class="version">${project.version}</div>
+          <div class="desc">${project.desc}</div>
+          <div class="devices">${project.devices}</div>
         </div>
       </a>
     `).join("");
