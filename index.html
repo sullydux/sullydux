@@ -218,9 +218,19 @@
     ];
 
     const cardList = document.getElementById("cardList");
+    const params = new URLSearchParams(window.location.search);
+    const requestedLink = params.get("link");
+
+    if (requestedLink) {
+      const project = projects.find((entry) => entry.link === requestedLink);
+
+      if (project) {
+        window.location.replace(project.link);
+      }
+    }
 
     cardList.innerHTML = projects.map((project) => `
-      <a class="copy-card" href="${project.link}" target="_blank" rel="noreferrer">
+      <a class="copy-card" href="?link=${encodeURIComponent(project.link)}">
         <div class="icon-wrap">
           <img src="${project.icon}" alt="${project.alt}">
         </div>
