@@ -108,19 +108,21 @@
 
   const renderer = new marked.Renderer();
 
-  renderer.heading = function (token) {
-    const raw = token.text;
-
-    // Match optional {#id}
-    const match = raw.match(/^(.*?)(?:\s*\{#([\w\-]+)\})?$/);
-    const cleanText = match[1];
-    const id = match[2] || cleanText
+  renderer.heading = function ({ tokens, depth }) {
+    const raw = tokens.map((token) => token.raw || "").join("");
+    const match = raw.match(/^(.*?)(?:\s*\{#([\w-]+)\})?$/);
+    const cleanSource = (match?.[1] || raw).trim();
+    const cleanTokens = marked.lexer.inlineTokens(cleanSource);
+    const headingHtml = this.parser.parseInline(cleanTokens);
+    const id = match?.[2] || cleanSource
       .toLowerCase()
       .replace(/[^\w]+/g, "-")
       .replace(/^-|-$/g, "");
 
-    return `<h${token.depth} id="${id}">${cleanText}</h${token.depth}>`;
+    return `<h${depth} id="${id}">${headingHtml}</h${depth}>`;
   };
+
+  marked.use({ renderer });
 
   fetch(MARKDOWN_FILE)
     .then(res => {
@@ -129,7 +131,7 @@
     })
     .then(md => {
       const content = document.getElementById("content");
-      content.innerHTML = marked.parse(md, { renderer });
+      content.innerHTML = marked.parse(md);
 
       /* 🔹 NEW PART: fix hash jump on first load */
       const hash = decodeURIComponent(window.location.hash.slice(1));
