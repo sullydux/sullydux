@@ -13,6 +13,11 @@
   gtag('config', 'G-7VS3WRTYBB');
 </script>
 
+  <meta name="description"
+        content="My projects I shared with links to them. Includes games and mods.">
+    <meta property="og:description"
+        content="My projects I shared with links to them. Includes games and mods.">
+        <meta name="author" content="Sullydux">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -104,8 +109,6 @@
     }
 
     .copy-card {
-      color: inherit;
-      text-decoration: none;
       display: grid;
       grid-template-columns: 88px 1fr;
       gap: 1rem;
@@ -117,13 +120,20 @@
       transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
     }
 
-    .copy-card:hover {
+    .card-main-link {
+      color: inherit;
+      text-decoration: none;
+      display: contents;
+    }
+
+    .copy-card:hover,
+    .copy-card:focus-within {
       transform: translateY(-2px);
       border-color: rgba(249, 115, 22, 0.7);
       background: rgba(30, 41, 59, 0.98);
     }
 
-    .copy-card:focus-visible {
+    .card-main-link:focus-visible {
       outline: 3px solid rgba(255, 255, 255, 0.35);
       outline-offset: 4px;
     }
@@ -169,6 +179,19 @@
       color: var(--muted);
       font-size: 0.88rem;
       letter-spacing: 0.02em;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .meta-link {
+      color: #7dd3fc;
+      text-decoration: none;
+    }
+
+    .meta-link:hover {
+      text-decoration: underline;
     }
 
     footer {
@@ -227,6 +250,8 @@
         alt: "Forsaken Legends: Cursed Isle icon",
         name: "Forsaken Legends: Cursed Isle",
         devices: "Computer, PC, and Controller",
+        readme: "https://sullydux.github.io/Curse/RM/",
+        license: "https://sullydux.github.io/Curse/LICENSE.txt",
         desc: "Step into a vibrant pixel-art world of adventure, mystery, and danger. Battle powerful bosses, face off against formidable enemies, and befriend unique characters as you explore diverse environments. Delve into hidden caves, uncover ancient secrets, and solve intriguing mysteries. With a rich, immersive world teeming with animals and challenges, your journey will test your skills, wit, and courage at every turn. Will you uncover the truth and conquer the unknown?",
         link: "https://sullydux.github.io/Curse/"
       },
@@ -235,6 +260,8 @@
         alt: "Secret Warfare icon",
         name: "Secret Warfare",
         devices: "Mobile, Tablet, Computer, and PC",
+        readme: "https://sullydux.github.io/Secret-Warfare/RM/",
+        license: "https://sullydux.github.io/Secret-Warfare/LICENSE.txt",
         desc: "In a world of secrets and shadows, only the unseen survive. As an elite agent in the Phantom Strike Division, you'll infiltrate, sabotage, and vanish without a trace. With stealth-driven levels and high-tech gear, every mission is a test of precision and nerve. Are you ready to step into the shadows and rewrite the rules of espionage?",
         link: "https://sullydux.github.io/Secret-Warfare/"
       },
@@ -243,6 +270,8 @@
         alt: "SullyEngineer icon",
         name: "SullyEngineer – Kerbal Space Program Parts Pack",
         devices: "Click to download the mod",
+        readme: "https://github.com/sullydux/SullyEngineer/blob/main/ReadME.md",
+        license: "",
         desc: "This is a collection of parts made for enhanced deep-space exploration in KSP.",
         link: "https://sullydux.github.io/SullyEngineer/download.zip"
       }
@@ -261,16 +290,22 @@
     }
 
     cardList.innerHTML = projects.map((project) => `
-      <a class="copy-card" href="?link=${encodeURIComponent(project.link)}">
+      <article class="copy-card">
+        <a class="card-main-link" href="?link=${encodeURIComponent(project.link)}">
         <div class="icon-wrap">
           <img src="${project.icon}" alt="${project.alt}">
         </div>
         <div class="details">
           <h3>${project.name}</h3>
           <div class="desc">${project.desc}</div>
-          <div class="devices">${project.devices}</div>
+          <div class="devices">
+            <span>${project.devices}</span>
+            ${project.readme !== "" ? `<a class="meta-link" href="${project.readme}" target="_blank" rel="noreferrer">README</a>` : ""}
+            ${project.license !== "" ? `<a class="meta-link" href="${project.license}" target="_blank" rel="noreferrer">License</a>` : ""}
+          </div>
         </div>
-      </a>
+        </a>
+      </article>
     `).join("");
   </script>
 </body>
