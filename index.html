@@ -44,6 +44,7 @@
       --accent-strong: #f97316;
       --border: rgba(148, 163, 184, 0.2);
       --shadow: 0 20px 45px rgba(2, 8, 23, 0.42);
+      --title-icon-size: 75px;
     }
 
     * {
@@ -70,6 +71,20 @@
 
     header {
       padding: 2.5rem 0 1.5rem;
+    }
+
+    .title-lockup {
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+
+    .title-lockup img {
+      width: var(--title-icon-size);
+      height: var(--title-icon-size);
+      flex: 0 0 auto;
+      display: block;
+      object-fit: contain;
     }
 
     h1 {
@@ -236,7 +251,10 @@
 </head>
 <body>
   <header>
-    <h1>Sullydux's Projects</h1>
+    <div class="title-lockup">
+      <img src="favicon.ico" alt="Sullydux favicon">
+      <h1>Sullydux's Projects</h1>
+    </div>
   </header>
 
   <main>
