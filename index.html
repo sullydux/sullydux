@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
 
+
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-7VS3WRTYBB"></script>
 <script>
@@ -18,33 +19,34 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <meta property="og:image" content="https://sullydux.github.io/sullydux/favicon.ico">
 
-  <meta name="description"
-        content="My projects I shared with links to them. Includes games and mods.">
-  <meta property="og:description"
-        content="My projects I shared with links to them. Includes games and mods.">
-      <meta name="author" content="Sullydux">
+  <meta name="description" content="My projects I shared with links to them. Includes games and mods.">
+  <meta property="og:description" content="My projects I shared with links to them. Includes games and mods.">
+  <meta name="author" content="Sullydux">
   <meta name="robots" content="index,follow">
   <link rel="canonical" href="https://sullydux.github.io/sullydux/">
   <meta property="og:type" content="website">
 
-
-
-
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Eagle+Lake&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #0f172a;
-      --panel: rgba(15, 23, 42, 0.82);
-      --panel-strong: rgba(30, 41, 59, 0.92);
-      --text: #e2e8f0;
-      --muted: #94a3b8;
-      --accent: #f59e0b;
-      --accent-strong: #f97316;
-      --border: rgba(148, 163, 184, 0.2);
-      --shadow: 0 20px 45px rgba(2, 8, 23, 0.42);
-      --title-icon-size: 75px;
+      --bg: #070914;
+      --panel: #0c1022;
+      --panel-strong: #0b132b;
+      --text: #eaf0ff;
+      --muted: rgba(234, 240, 255, 0.72);
+      --accent: #fbbf24;
+      --accent-2: #60a5fa;
+      --border: rgba(234, 240, 255, 0.18);
+      --border-strong: rgba(251, 191, 36, 0.55);
+      --shadow: 10px 10px 0 rgba(0, 0, 0, 0.35);
+      --radius-lg: 10px;
+      --radius-md: 8px;
+      --title-icon-size: 72px;
     }
 
     * {
@@ -54,11 +56,19 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      font-family: ui-rounded, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+        "Apple Color Emoji", "Segoe UI Emoji";
       color: var(--text);
       background:
-        radial-gradient(circle at top, rgba(249, 115, 22, 0.28), transparent 34%),
-        linear-gradient(160deg, #020617 0%, #0f172a 46%, #1e293b 100%);
+        radial-gradient(circle at 12px 18px, rgba(255, 255, 255, 0.24) 1px, transparent 2px),
+        radial-gradient(circle at 54px 44px, rgba(255, 255, 255, 0.20) 1px, transparent 2px),
+        radial-gradient(circle at 94px 22px, rgba(255, 255, 255, 0.18) 1px, transparent 2px),
+        radial-gradient(circle at 22px 92px, rgba(255, 255, 255, 0.16) 1px, transparent 2px),
+        radial-gradient(circle at 78px 78px, rgba(255, 255, 255, 0.14) 1px, transparent 2px),
+        radial-gradient(circle at 35px 110px, rgba(251, 191, 36, 0.14) 1px, transparent 3px),
+        radial-gradient(circle at 110px 30px, rgba(96, 165, 250, 0.12) 1px, transparent 3px),
+        linear-gradient(180deg, #03040a, var(--bg));
+      background-size: 120px 120px, 140px 140px, 160px 160px, 185px 185px, 210px 210px, 260px 260px, 320px 320px, auto;
       display: flex;
       flex-direction: column;
     }
@@ -85,20 +95,24 @@
       flex: 0 0 auto;
       display: block;
       object-fit: contain;
+      filter: drop-shadow(0 8px 0 rgba(0, 0, 0, 0.35));
     }
 
     h1 {
       margin: 0;
       font-size: clamp(2.2rem, 5vw, 4rem);
-      letter-spacing: 0.04em;
+      letter-spacing: -0.01em;
+      font-family: "Segoe UI";
+      line-height: 1.05;
     }
 
-    .subtitle {
-      margin: 0.8rem 0 0;
-      max-width: 60ch;
-      color: var(--muted);
-      font-size: 1.05rem;
-      line-height: 1.6;
+    header p {
+      font-size: 1rem;
+    }
+
+    header p::before {
+      content: "> ";
+      color: rgba(251, 191, 36, 0.95);
     }
 
     main {
@@ -110,28 +124,16 @@
 
     .panel {
       background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 28px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-lg);
       box-shadow: var(--shadow);
-      backdrop-filter: blur(10px);
-      padding: 1.5rem;
-    }
-
-    .panel h2 {
-      margin: 0 0 0.4rem;
-      font-size: 1.4rem;
-    }
-
-    .panel p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.6;
+      padding: 1.25rem;
     }
 
     .card-list {
-      margin-top: 1.5rem;
       display: grid;
-      gap: 1rem;
+      gap: 1.05rem;
+      font-family: Roboto;
     }
 
     .copy-card {
@@ -140,10 +142,11 @@
       gap: 1rem;
       align-items: center;
       background: var(--panel-strong);
-      border: 1px solid rgba(245, 158, 11, 0.22);
-      border-radius: 22px;
+      border: 2px solid rgba(234, 240, 255, 0.16);
+      border-radius: var(--radius-md);
       padding: 1rem;
-      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+      transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+      box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.28);
     }
 
     .card-main-link {
@@ -154,9 +157,10 @@
 
     .copy-card:hover,
     .copy-card:focus-within {
-      transform: translateY(-2px);
-      border-color: rgba(249, 115, 22, 0.7);
-      background: rgba(30, 41, 59, 0.98);
+      transform: translate(-2px, -2px);
+      border-color: var(--border-strong);
+      background: #0d1a37;
+      box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.28);
     }
 
     .card-main-link:focus-visible {
@@ -167,12 +171,13 @@
     .icon-wrap {
       width: 88px;
       aspect-ratio: 1 / 1;
-      border-radius: 18px;
+      border-radius: 12px;
       overflow: hidden;
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.04);
       display: grid;
       place-items: center;
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      border: 2px solid rgba(234, 240, 255, 0.14);
+      box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.25);
     }
 
     .icon-wrap img {
@@ -180,6 +185,7 @@
       height: 100%;
       object-fit: contain;
       display: block;
+      image-rendering: pixelated;
     }
 
     .details {
@@ -191,6 +197,7 @@
       margin: 0;
       font-size: clamp(1.35rem, 2.6vw, 1.9rem);
       line-height: 1.2;
+      letter-spacing: -0.01em;
     }
 
     .desc {
@@ -212,12 +219,15 @@
     }
 
     .meta-link {
-      color: #7dd3fc;
+      color: rgba(255, 255, 255, 0.92);
       text-decoration: none;
+      border-bottom: 2px dotted rgba(251, 191, 36, 0.7);
+      padding-bottom: 0;
     }
 
     .meta-link:hover {
-      text-decoration: underline;
+      border-bottom-style: solid;
+      border-bottom-color: rgba(96, 165, 250, 0.9);
     }
 
     footer {
@@ -230,12 +240,15 @@
     }
 
     footer a {
-      color: #7dd3fc;
+      color: rgba(255, 255, 255, 0.92);
       text-decoration: none;
+      border-bottom: 2px dotted rgba(251, 191, 36, 0.7);
+      padding-bottom: 0;
     }
 
     footer a:hover {
-      text-decoration: underline;
+      border-bottom-style: solid;
+      border-bottom-color: rgba(96, 165, 250, 0.9);
     }
 
     @media (max-width: 700px) {
@@ -250,17 +263,89 @@
   </style>
 </head>
 <body>
+
   <header>
     <div class="title-lockup">
       <img src="favicon.ico" alt="Sullydux favicon">
       <h1>Sullydux's Projects</h1>
     </div>
+    <p style="margin: 0.75rem 0 0; color: var(--muted); max-width: 65ch; line-height: 1.55;">
+      A small hub for my games and mods.
+    </p>
   </header>
 
+  
   <main>
+
     <section class="panel">
-      <div class="card-list" id="cardList"></div>
+
+      <div class="card-list">
+
+        <!-- Forsaken Legends: Cursed Isle -->
+        <article class="copy-card">
+          <a class="card-main-link" href="https://sullydux.github.io/Curse/">
+            <div class="icon-wrap">
+              <img src="curse.png" alt="Forsaken Legends: Cursed Isle icon">
+            </div>
+            <div class="details">
+              <h3>Forsaken Legends: Cursed Isle</h3>
+              <div class="desc">
+                Step into a vibrant pixel-art world of adventure, mystery, and danger. Battle powerful bosses, face off against formidable enemies, and befriend unique characters as you explore diverse environments. Delve into hidden caves, uncover ancient secrets, and solve intriguing mysteries. With a rich, immersive world teeming with animals and challenges, your journey will test your skills, wit, and courage at every turn. Will you uncover the truth and conquer the unknown?
+              </div>
+              <div class="devices">
+                <span>Computer, PC, and Controller</span>
+                <a class="meta-link" href="https://sullydux.github.io/Curse/RM/" target="_blank" rel="noreferrer">README</a>
+                <a class="meta-link" href="https://sullydux.github.io/Curse/LICENSE.txt" target="_blank" rel="noreferrer">License</a>
+              </div>
+            </div>
+          </a>
+        </article>
+
+        <!-- Secret Warfare -->
+        <article class="copy-card">
+          <a class="card-main-link" href="https://sullydux.github.io/Secret-Warfare/">
+            <div class="icon-wrap">
+              <img src="secret.png" alt="Secret Warfare icon">
+            </div>
+            <div class="details">
+              <h3>Secret Warfare</h3>
+              <div class="desc">
+                In a world of secrets and shadows, only the unseen survive. As an elite agent in the Phantom Strike Division, you'll infiltrate, sabotage, and vanish without a trace. With stealth-driven levels and high-tech gear, every mission is a test of precision and nerve. Are you ready to step into the shadows and rewrite the rules of espionage?
+              </div>
+              <div class="devices">
+                <span>Mobile, Tablet, Computer, and PC</span>
+                <a class="meta-link" href="https://sullydux.github.io/Secret-Warfare/RM/" target="_blank" rel="noreferrer">README</a>
+                <a class="meta-link" href="https://sullydux.github.io/Secret-Warfare/LICENSE.txt" target="_blank" rel="noreferrer">License</a>
+              </div>
+            </div>
+          </a>
+        </article>
+
+        <!-- SullyEngineer -->
+        <article class="copy-card">
+          <a class="card-main-link" href="https://sullydux.github.io/SullyEngineer/download.zip">
+            <div class="icon-wrap">
+              <img src="ksp.png" alt="SullyEngineer icon">
+            </div>
+            <div class="details">
+              <h3>SullyEngineer - Kerbal Space Program Parts Pack</h3>
+              <div class="desc">
+                This is a collection of parts made for enhanced deep-space exploration in KSP.
+              </div>
+              <div class="devices">
+                <span>Click to download the mod</span>
+                <a class="meta-link" href="https://github.com/sullydux/SullyEngineer/blob/main/ReadME.md" target="_blank" rel="noreferrer">README</a>
+              </div>
+            </div>
+          </a>
+        </article>
+
+        
+
+      </div>
+
     </section>
+
   </main>
 
   <footer>
@@ -271,71 +356,6 @@
       <a href="https://scratch.mit.edu/users/sullydux/" target="_blank" rel="noreferrer">Scratch</a>.
     </p>
   </footer>
-
-  <script>
-    const projects = [
-      {
-        icon: "curse.png",
-        alt: "Forsaken Legends: Cursed Isle icon",
-        name: "Forsaken Legends: Cursed Isle",
-        devices: "Computer, PC, and Controller",
-        readme: "https://sullydux.github.io/Curse/RM/",
-        license: "https://sullydux.github.io/Curse/LICENSE.txt",
-        desc: "Step into a vibrant pixel-art world of adventure, mystery, and danger. Battle powerful bosses, face off against formidable enemies, and befriend unique characters as you explore diverse environments. Delve into hidden caves, uncover ancient secrets, and solve intriguing mysteries. With a rich, immersive world teeming with animals and challenges, your journey will test your skills, wit, and courage at every turn. Will you uncover the truth and conquer the unknown?",
-        link: "https://sullydux.github.io/Curse/"
-      },
-      {
-        icon: "secret.png",
-        alt: "Secret Warfare icon",
-        name: "Secret Warfare",
-        devices: "Mobile, Tablet, Computer, and PC",
-        readme: "https://sullydux.github.io/Secret-Warfare/RM/",
-        license: "https://sullydux.github.io/Secret-Warfare/LICENSE.txt",
-        desc: "In a world of secrets and shadows, only the unseen survive. As an elite agent in the Phantom Strike Division, you'll infiltrate, sabotage, and vanish without a trace. With stealth-driven levels and high-tech gear, every mission is a test of precision and nerve. Are you ready to step into the shadows and rewrite the rules of espionage?",
-        link: "https://sullydux.github.io/Secret-Warfare/"
-      },
-      {
-        icon: "ksp.png",
-        alt: "SullyEngineer icon",
-        name: "SullyEngineer – Kerbal Space Program Parts Pack",
-        devices: "Click to download the mod",
-        readme: "https://github.com/sullydux/SullyEngineer/blob/main/ReadME.md",
-        license: "",
-        desc: "This is a collection of parts made for enhanced deep-space exploration in KSP.",
-        link: "https://sullydux.github.io/SullyEngineer/download.zip"
-      }
-    ];
-
-    const cardList = document.getElementById("cardList");
-    const params = new URLSearchParams(window.location.search);
-    const requestedLink = params.get("link");
-
-    if (requestedLink) {
-      const project = projects.find((entry) => entry.link === requestedLink);
-
-      if (project) {
-        window.location.replace(project.link);
-      }
-    }
-
-    cardList.innerHTML = projects.map((project) => `
-      <article class="copy-card">
-        <a class="card-main-link" href="?link=${encodeURIComponent(project.link)}">
-        <div class="icon-wrap">
-          <img src="${project.icon}" alt="${project.alt}">
-        </div>
-        <div class="details">
-          <h3>${project.name}</h3>
-          <div class="desc">${project.desc}</div>
-          <div class="devices">
-            <span>${project.devices}</span>
-            ${project.readme !== "" ? `<a class="meta-link" href="${project.readme}" target="_blank" rel="noreferrer">README</a>` : ""}
-            ${project.license !== "" ? `<a class="meta-link" href="${project.license}" target="_blank" rel="noreferrer">License</a>` : ""}
-          </div>
-        </div>
-        </a>
-      </article>
-    `).join("");
-  </script>
 </body>
 </html>
+
