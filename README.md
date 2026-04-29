@@ -1,13 +1,16 @@
-I'm currently making [Scratch](https://scratch.mit.edu/users/sullydux/) projects. I also play Kerbal Space Program and will post any mods I make here. Also, what website design is better for Cursed Isle: on Github or on Google Sites?
+I'm currently making Scratch projects and will make some python, maybe. I also play Kerbal Space Program and will post any mods I make here. Also, what website design is better for Cursed Isle: [on Github](https://sullydux.github.io/Curse/) or on [Google Sites](https://sites.google.com/view/cursed-isle)?
 
-[Forsaken Legends: Cursed Isle on Github](https://sullydux.github.io/Curse/) 
+---
 
-[Forsaken Legends: Cursed Isle on Google Sites](https://sites.google.com/view/cursed-isle) 
+**Links**
 
-[Secret Warfare on Github](https://sullydux.github.io/Secret-Warfare/)
+[Sullybase](https://sullydux.github.io/sullydux/)
 
-[SullyEngineer -- Parts mod](https://github.com/sullydux/SullyEngineer)
+[Scratch](https://scratch.mit.edu/users/sullydux/)
 
+---
+
+**Acknowledgements**
 
 By [Vitr013 on Scratch](https://scratch.mit.edu/users/Vitr013/):
  ["Man your like the next grit patch!!!"
