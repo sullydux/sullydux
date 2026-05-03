@@ -1,0 +1,1047 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Image to ASCII Studio | Made by a friend</title>
+  <meta property="og:title" content="Image to ASCII Studio | Made by a friend">
+
+  <meta property="og:description" content="Convert images to ASCII art with this online tool.">
+  <meta name="description" content="Convert images to ASCII art with this online tool.">
+
+  <meta name="author" content="Charlie Meade">
+  
+  <link rel="canonical" href="https://sullydux.github.io/sullydux/ASCII-studio.html">
+  <link rel="url" href="https://sullydux.github.io/sullydux/ASCII-studio.html">
+  <meta property="og:type" content="website">
+
+  <style>
+    :root {
+      color-scheme: dark light;
+      --bg:#0b0d10; --panel:#151922; --panel2:#10141b; --panel3:#1d2330;
+      --text:#edf2f8; --muted:#9aa7b8; --line:#2b3444; --accent:#38bdf8;
+      --accent2:#f59e0b; --good:#22c55e; --danger:#fb7185; --shadow:rgba(0,0,0,.36);
+      --ascii-bg:#030507; --ascii-fg:#f8fafc;
+    }
+    body.light {
+      --bg:#f3f6fa; --panel:#ffffff; --panel2:#eef2f7; --panel3:#e5ebf3;
+      --text:#152033; --muted:#5d6b82; --line:#d2dae6; --accent:#0284c7;
+      --accent2:#b45309; --shadow:rgba(20,32,52,.09); --ascii-bg:#ffffff; --ascii-fg:#101828;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:var(--text); }
+    button, input, select, textarea { font:inherit; }
+    .wrap { max-width:1520px; margin:0 auto; padding:22px; }
+    .topbar { display:flex; align-items:end; justify-content:space-between; gap:16px; margin-bottom:14px; }
+    h1 { margin:0; font-size:clamp(24px, 3vw, 36px); letter-spacing:0; }
+    .sub { margin:6px 0 0; color:var(--muted); font-size:14px; }
+    .metrics { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; }
+    .metric { border:1px solid var(--line); background:var(--panel2); border-radius:8px; padding:7px 10px; color:var(--muted); font-size:12px; min-width:92px; text-align:center; }
+    .metric strong { display:block; color:var(--text); font-size:13px; }
+    .workflow { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 16px; }
+    .chip { border:1px solid var(--line); background:var(--panel2); color:var(--muted); border-radius:999px; padding:7px 10px; font-size:12px; }
+    .chip strong { color:var(--text); }
+    .layout { display:grid; grid-template-columns:minmax(320px, 400px) minmax(430px, 1fr) minmax(280px, 350px); gap:16px; align-items:start; }
+    .panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; box-shadow:0 12px 28px var(--shadow); }
+    .controls, .side { padding:14px; }
+    .section { padding:14px 0; border-top:1px solid var(--line); }
+    .section:first-child { padding-top:0; border-top:0; }
+    .section-title { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; font-weight:700; font-size:13px; text-transform:uppercase; color:var(--muted); letter-spacing:.04em; }
+    .dropzone { border:2px dashed var(--line); border-radius:8px; padding:18px; text-align:center; background:var(--panel2); transition:.15s ease; cursor:pointer; outline:none; }
+    .dropzone.dragover, .dropzone:focus-visible { border-color:var(--accent); background:color-mix(in srgb, var(--accent) 13%, var(--panel2)); }
+    .dropzone strong { display:block; margin-bottom:4px; }
+    .dropzone span, .hint { color:var(--muted); font-size:12px; line-height:1.4; }
+    label { display:block; margin:11px 0 6px; font-size:13px; color:var(--text); }
+    .field-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:11px 0 6px; }
+    .field-head label { margin:0; }
+    .range-row { display:flex; align-items:center; gap:10px; }
+    input[type=range] { flex:1; accent-color:var(--accent); min-width:0; }
+    output { color:var(--muted); font-size:12px; min-width:52px; text-align:right; }
+    input[type=file], input[type=text], input[type=search], input[type=color], select, textarea, button { border:1px solid var(--line); border-radius:8px; background:var(--panel2); color:var(--text); }
+    input[type=file], input[type=text], input[type=search], select { width:100%; padding:9px 10px; }
+    textarea.custom-palette { width:100%; min-height:82px; resize:vertical; padding:9px 10px; font:12px/1.35 "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }
+    input[type=color] { width:42px; height:36px; padding:3px; }
+    button { padding:9px 11px; cursor:pointer; font-weight:700; background:color-mix(in srgb, var(--accent) 16%, var(--panel2)); line-height:1.2; }
+    button.secondary { background:var(--panel2); }
+    button.active { border-color:var(--accent); background:color-mix(in srgb, var(--accent) 18%, var(--panel2)); color:var(--text); }
+    button.danger { background:color-mix(in srgb, var(--danger) 16%, var(--panel2)); }
+    button.small { padding:6px 8px; font-size:12px; }
+    button.icon { width:38px; height:36px; padding:0; display:grid; place-items:center; }
+    button:disabled { opacity:.48; cursor:not-allowed; }
+    .button-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; }
+    .button-grid.three { grid-template-columns:repeat(3, minmax(0, 1fr)); }
+    .button-grid.export-grid { grid-template-columns:1fr; }
+    .button-grid.export-grid button { text-align:left; font-size:12px; }
+    .toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .toggles { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px 12px; margin-top:10px; }
+    .toggles label { margin:0; display:flex; align-items:center; gap:8px; color:var(--muted); min-height:28px; }
+    .swatches { display:flex; align-items:center; gap:8px; margin-top:8px; }
+    .thumb { width:100%; max-height:220px; object-fit:contain; display:none; margin-top:12px; border-radius:8px; border:1px solid var(--line); background:var(--panel2); }
+    .palette-preview { display:flex; flex-wrap:wrap; gap:3px; padding:8px; border:1px solid var(--line); border-radius:8px; background:var(--panel2); min-height:38px; max-height:126px; overflow:auto; margin-top:8px; }
+    .palette-preview span { display:grid; place-items:center; width:22px; height:22px; border-radius:6px; background:var(--panel3); color:var(--text); font:12px/1 "SFMono-Regular", Consolas, monospace; }
+    .palette-meta { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .palette-meta span { border:1px solid var(--line); border-radius:999px; padding:4px 7px; background:var(--panel2); color:var(--muted); font-size:11px; }
+    .palette-tools { display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:8px; margin-top:8px; }
+    .mini-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; }
+    .workspace { overflow:hidden; }
+    .workspace-head { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:12px; border-bottom:1px solid var(--line); background:var(--panel2); }
+    .tabs { display:flex; gap:6px; }
+    .tab-btn { border-radius:8px; padding:8px 11px; font-size:13px; background:transparent; }
+    .tab-btn.active { border-color:var(--accent); background:color-mix(in srgb, var(--accent) 15%, var(--panel2)); }
+    .zoom { display:flex; align-items:center; gap:6px; color:var(--muted); font-size:12px; }
+    .view { padding:12px; }
+    #output {
+      width:100%; min-height:690px; resize:vertical; padding:14px; border:0; border-radius:8px;
+      background:var(--ascii-bg); color:var(--ascii-fg); white-space:pre; overflow:auto;
+      font-family:"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; font-size:8px; line-height:1; letter-spacing:0;
+    }
+    #output.wrap-lines { white-space:pre-wrap; overflow-wrap:anywhere; }
+    .status { min-height:20px; margin-top:10px; color:var(--muted); font-size:12px; }
+    .favorites-list { display:grid; gap:10px; max-height:640px; overflow:auto; padding-right:3px; }
+    .favorite-item { border:1px solid var(--line); border-radius:8px; background:var(--panel2); padding:9px; }
+    .favorite-header { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:7px; }
+    .favorite-title { color:var(--muted); font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .favorite-meta { color:var(--muted); font-size:11px; margin:-2px 0 7px; }
+    .favorite-preview { margin:0; max-height:170px; overflow:auto; padding:8px; border-radius:8px; background:var(--ascii-bg); color:var(--ascii-fg); font:7px/1 "SFMono-Regular", Consolas, monospace; white-space:pre; }
+    .preset-grid { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:8px; }
+    .output-health { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; margin-top:10px; }
+    .health-item { border:1px solid var(--line); border-radius:8px; background:var(--panel2); padding:8px; color:var(--muted); font-size:11px; }
+    .health-item strong { display:block; color:var(--text); font-size:13px; margin-bottom:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .health-item.warn strong { color:var(--accent2); }
+    .kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:6px; padding:1px 5px; color:var(--text); background:var(--panel3); font:11px/1.5 "SFMono-Regular", Consolas, monospace; }
+    details.help { border:1px solid var(--line); border-radius:8px; padding:9px; background:var(--panel2); }
+    details.help summary { cursor:pointer; font-weight:700; color:var(--text); }
+    details.help .hint { margin-top:8px; display:grid; gap:5px; }
+    body.focus-mode .topbar, body.focus-mode .workflow, body.focus-mode .controls, body.focus-mode .side { display:none; }
+    body.focus-mode .layout { grid-template-columns:1fr; }
+    body.focus-mode .wrap { max-width:none; }
+    body.focus-mode #output { min-height:calc(100vh - 118px); }
+    canvas { display:none; }
+    @media (max-width:1180px) { .layout { grid-template-columns:360px 1fr; } .side { grid-column:1 / -1; } }
+    @media (max-width:820px) { .wrap { padding:14px; } .topbar { align-items:flex-start; flex-direction:column; } .metrics { justify-content:flex-start; } .layout { grid-template-columns:1fr; } .toggles, .button-grid, .button-grid.three, .preset-grid, .output-health { grid-template-columns:1fr; } #output { min-height:430px; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="topbar">
+      <div>
+        <h1>Image to ASCII Studio v5</h1>
+        <div class="sub">A local, no-upload converter with color, dithering, presets, exports, and session history.</div>
+      </div>
+      <div class="metrics" aria-live="polite">
+        <div class="metric"><strong id="metricSize">-</strong>source</div>
+        <div class="metric"><strong id="metricChars">0</strong>chars</div>
+        <div class="metric"><strong id="metricLines">0</strong>lines</div>
+        <div class="metric"><strong id="metricColumns">0</strong>columns</div>
+        <div class="metric"><strong id="metricRender">0 ms</strong>render</div>
+      </div>
+    </header>
+    <div class="workflow" aria-label="Workflow">
+      <div class="chip"><strong>1</strong> Load image</div>
+      <div class="chip"><strong>2</strong> Tune style</div>
+      <div class="chip"><strong>3</strong> Save favorites</div>
+      <div class="chip"><strong>4</strong> Export anywhere</div>
+    </div>
+
+    <main class="layout">
+      <aside class="panel controls">
+        <section class="section">
+          <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Drop an image here or choose a file">
+            <strong>Drop image here</strong><span>or choose, paste, or load a demo gradient</span>
+          </div>
+          <label for="fileInput">Image file</label>
+          <input id="fileInput" type="file" accept="image/*" />
+          <div class="toolbar" style="margin-top:8px">
+            <button id="demoBtn" class="secondary small" type="button">Load Demo</button>
+            <button id="reRenderBtn" class="secondary small" type="button" disabled>Render Now</button>
+          </div>
+          <div class="hint" style="margin-top:8px">Paste from clipboard with Cmd+V. Everything stays on this computer.</div>
+          <img id="thumb" class="thumb" alt="Uploaded image preview" />
+        </section>
+
+        <section class="section">
+          <div class="section-title">Geometry</div>
+          <label for="widthRange">Output width</label>
+          <div class="range-row"><input id="widthRange" type="range" min="24" max="320" value="130" /><output id="widthLabel">130</output></div>
+          <label for="scaleRange">Vertical scale</label>
+          <div class="range-row"><input id="scaleRange" type="range" min="0.25" max="1.20" step="0.01" value="0.50" /><output id="scaleLabel">0.50</output></div>
+          <label for="spacingRange">Horizontal spacing</label>
+          <div class="range-row"><input id="spacingRange" type="range" min="1" max="4" step="1" value="1" /><output id="spacingLabel">1x</output></div>
+          <label for="lineHeightRange">Line height</label>
+          <div class="range-row"><input id="lineHeightRange" type="range" min="0.75" max="1.60" step="0.05" value="1.00" /><output id="lineHeightLabel">1.00</output></div>
+          <div class="toggles">
+            <label><input id="preserveToggle" type="checkbox" checked /> Preserve aspect</label>
+            <label><input id="wrapToggle" type="checkbox" /> Wrap output</label>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">Tone</div>
+          <label for="brightnessRange">Brightness</label>
+          <div class="range-row"><input id="brightnessRange" type="range" min="-80" max="80" value="0" /><output id="brightnessLabel">0</output></div>
+          <label for="contrastRange">Contrast</label>
+          <div class="range-row"><input id="contrastRange" type="range" min="-80" max="120" value="10" /><output id="contrastLabel">10</output></div>
+          <label for="gammaRange">Gamma</label>
+          <div class="range-row"><input id="gammaRange" type="range" min="0.35" max="2.50" step="0.05" value="1.00" /><output id="gammaLabel">1.00</output></div>
+          <label for="saturationRange">Color saturation</label>
+          <div class="range-row"><input id="saturationRange" type="range" min="0" max="220" value="100" /><output id="saturationLabel">100%</output></div>
+          <label for="thresholdRange">Threshold mix</label>
+          <div class="range-row"><input id="thresholdRange" type="range" min="0" max="100" value="0" /><output id="thresholdLabel">0%</output></div>
+          <div class="toggles">
+            <label><input id="invertToggle" type="checkbox" /> Invert</label>
+            <label><input id="edgeToggle" type="checkbox" /> Edge boost</label>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">Characters</div>
+          <label for="paletteSelect">Palette</label>
+          <select id="paletteSelect">
+            <option value="dense" selected>Dense: @%#*+=-:. </option>
+            <option value="mega">Complex full tone: 70+ glyphs</option>
+            <option value="photographic">Photographic: ink to air</option>
+            <option value="architect">Architect: blocks + linework</option>
+            <option value="halftone">Halftone: dots and rings</option>
+            <option value="technical">Technical: symbols + marks</option>
+            <option value="alphanumeric">Alphanumeric: letters + numbers</option>
+            <option value="noir">Noir: heavy blackletter texture</option>
+            <option value="soft">Soft shade: quiet gradients</option>
+            <option value="wire">Wireframe: strokes only</option>
+            <option value="blocks">Blocks: █▓▒░ </option>
+            <option value="classic">Classic: #X+-. </option>
+            <option value="sketch">Sketch: WMNQ0O?7!:-. </option>
+            <option value="binary">Binary: 10 </option>
+            <option value="smooth">Smooth: $@B%8&WM#*</option>
+            <option value="newspaper">Newspaper: MW&8%B$#+=</option>
+            <option value="dots">Dots: ●◉◎○◌· </option>
+            <option value="braille">Braille: ⣿⣷⣶⣤⣀ </option>
+            <option value="minimal">Minimal: #+-. </option>
+            <option value="outline">Outline: ▉▇▆▅▄▃▂▁ </option>
+            <option value="emoji">Emoji shade: 🟫🟧🟨⬜</option>
+            <option value="custom">Custom</option>
+          </select>
+          <div id="palettePreview" class="palette-preview" aria-label="Palette preview"></div>
+          <div id="paletteInfo" class="palette-meta" aria-live="polite"></div>
+          <div class="palette-tools">
+            <button id="reversePaletteBtn" class="secondary small" type="button">Reverse</button>
+            <button id="dedupePaletteBtn" class="secondary small" type="button">Dedupe</button>
+            <button id="spacePaletteBtn" class="secondary small" type="button">Add Space</button>
+          </div>
+          <label for="customPalette">Custom palette, dark to light</label>
+          <textarea id="customPalette" class="custom-palette" spellcheck="false">@%#*+=-:. </textarea>
+          <div class="mini-grid">
+            <div>
+              <label for="paletteCurveSelect">Tone curve</label>
+              <select id="paletteCurveSelect">
+                <option value="linear" selected>Linear</option>
+                <option value="shadow">Hold shadows</option>
+                <option value="highlight">Hold highlights</option>
+                <option value="poster">Poster steps</option>
+                <option value="soft">Soft contrast</option>
+              </select>
+            </div>
+            <div>
+              <label for="paletteSampleRange">Preview size</label>
+              <div class="range-row"><input id="paletteSampleRange" type="range" min="18" max="120" value="54" /><output id="paletteSampleLabel">54</output></div>
+            </div>
+          </div>
+          <label for="ditherSelect">Dithering</label>
+          <select id="ditherSelect">
+            <option value="none" selected>None</option>
+            <option value="ordered">Ordered Bayer</option>
+            <option value="floyd">Floyd-Steinberg</option>
+            <option value="atkinson">Atkinson</option>
+          </select>
+        </section>
+      </aside>
+
+      <section class="panel workspace">
+        <div class="workspace-head">
+          <div class="tabs">
+            <button id="tabCurrent" class="tab-btn active" type="button">Current</button>
+            <button id="tabFavorites" class="tab-btn" type="button">Favorites</button>
+          </div>
+          <div class="zoom">
+            <button id="zoomOutBtn" class="icon secondary" type="button" title="Zoom out">-</button>
+            <span id="zoomLabel">8px</span>
+            <button id="zoomInBtn" class="icon secondary" type="button" title="Zoom in">+</button>
+          </div>
+        </div>
+        <div id="currentView" class="view">
+          <textarea id="output" placeholder="ASCII art will appear here..." spellcheck="false"></textarea>
+          <div class="toolbar" style="margin-top:10px; justify-content:space-between;">
+            <div class="toolbar">
+              <button id="addFavoriteBtn" class="secondary small" type="button" disabled>Save Favorite</button>
+              <button id="undoBtn" class="secondary small" type="button" disabled>Undo</button>
+              <button id="redoBtn" class="secondary small" type="button" disabled>Redo</button>
+              <button id="cleanBtn" class="secondary small" type="button" disabled>Clean</button>
+              <button id="cropBtn" class="secondary small" type="button" disabled>Crop Blank Border</button>
+              <button id="focusBtn" class="secondary small" type="button">Focus</button>
+            </div>
+            <span class="hint" id="favoriteCountLabel">0 favorites</span>
+          </div>
+          <div class="output-health" aria-live="polite">
+            <div class="health-item"><strong id="healthLines">0</strong>lines</div>
+            <div class="health-item"><strong id="healthColumns">0</strong>widest line</div>
+            <div id="shareHealth" class="health-item"><strong id="healthShare">No share size</strong>fit check</div>
+          </div>
+        </div>
+        <div id="favoritesView" class="view" style="display:none;">
+          <div class="toolbar" style="margin-bottom:10px">
+            <input id="favoriteSearch" type="search" placeholder="Search favorites..." aria-label="Search favorites" />
+            <button id="exportFavoritesBtn" class="secondary small" type="button">Export</button>
+            <button id="importFavoritesBtn" class="secondary small" type="button">Import</button>
+            <input id="importFavoritesFile" type="file" accept="application/json,.json" style="display:none" />
+          </div>
+          <div id="favoritesList" class="favorites-list"></div>
+        </div>
+      </section>
+
+      <aside class="panel side">
+        <section class="section">
+          <div class="section-title">Export</div>
+          <div class="button-grid export-grid">
+            <button id="copyBtn" type="button" disabled>Copy plain text</button>
+            <button id="downloadBtn" class="secondary" type="button" disabled>Download .txt file</button>
+            <button id="pngBtn" class="secondary" type="button" disabled>Download PNG image</button>
+            <button id="htmlBtn" class="secondary" type="button" disabled>Download HTML page</button>
+            <button id="svgBtn" class="secondary" type="button" disabled>Download SVG vector</button>
+            <button id="markdownBtn" class="secondary" type="button" disabled>Download Markdown</button>
+            <button id="copyMdBtn" class="secondary" type="button" disabled>Copy Markdown block</button>
+            <button id="favoriteNowBtn" class="secondary" type="button" disabled>Save to local favorites</button>
+          </div>
+          <label for="exportScaleRange">PNG scale</label>
+          <div class="range-row"><input id="exportScaleRange" type="range" min="10" max="28" value="14" /><output id="exportScaleLabel">14px</output></div>
+          <div class="swatches">
+            <label style="margin:0" for="fgColor">Text</label><input id="fgColor" type="color" value="#f8fafc" />
+            <label style="margin:0" for="bgColor">Back</label><input id="bgColor" type="color" value="#030507" />
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">Presets</div>
+          <div class="preset-grid">
+            <button class="secondary small preset" type="button" data-preset="poster">Poster</button>
+            <button class="secondary small preset" type="button" data-preset="terminal">Terminal</button>
+            <button class="secondary small preset" type="button" data-preset="stencil">Stencil</button>
+            <button class="secondary small preset" type="button" data-preset="micro">Micro</button>
+            <button class="secondary small preset" type="button" data-preset="comic">Comic</button>
+            <button class="secondary small preset" type="button" data-preset="blueprint">Blueprint</button>
+            <button class="secondary small preset" type="button" data-preset="photo">Photo Detail</button>
+            <button class="secondary small preset" type="button" data-preset="emoji">Emoji Pop</button>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">Share Sizes</div>
+          <div class="preset-grid">
+            <button class="secondary small size-preset" type="button" data-size="imessage">iMessage</button>
+            <button class="secondary small size-preset" type="button" data-size="sms">Tiny Text</button>
+            <button class="secondary small size-preset" type="button" data-size="discord">Discord</button>
+            <button class="secondary small size-preset" type="button" data-size="slack">Slack</button>
+            <button class="secondary small size-preset" type="button" data-size="reddit">Reddit</button>
+            <button class="secondary small size-preset" type="button" data-size="email">Email</button>
+          </div>
+          <div class="hint" style="margin-top:8px">These resize the text output for common places where pasted ASCII needs to stay readable.</div>
+        </section>
+
+        <section class="section">
+          <div class="section-title">Session</div>
+          <div class="toggles" style="grid-template-columns:1fr;">
+            <label><input id="fitToggle" type="checkbox" checked /> Auto render changes</label>
+            <label><input id="colorToggle" type="checkbox" /> Color HTML export</label>
+            <label><input id="transparentPngToggle" type="checkbox" /> Transparent PNG background</label>
+            <label><input id="draftToggle" type="checkbox" checked /> Restore editor draft</label>
+            <label><input id="lightToggle" type="checkbox" /> Light theme</label>
+          </div>
+          <div class="toolbar" style="margin-top:10px">
+            <button id="resetBtn" class="secondary" type="button">Reset</button>
+            <button id="clearSettingsBtn" class="secondary" type="button">Clear Settings</button>
+            <button id="clearFavoritesBtn" class="danger" type="button">Clear Favorites</button>
+          </div>
+          <details class="help" style="margin-top:10px">
+            <summary>Shortcuts</summary>
+            <div class="hint">
+              <span><span class="kbd">Cmd/Ctrl</span> + <span class="kbd">Enter</span> render</span>
+              <span><span class="kbd">Cmd/Ctrl</span> + <span class="kbd">S</span> save favorite</span>
+              <span><span class="kbd">Cmd/Ctrl</span> + <span class="kbd">E</span> export TXT</span>
+              <span><span class="kbd">Esc</span> leave focus mode</span>
+            </div>
+          </details>
+          <div id="status" class="status">Choose an image to begin.</div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <canvas id="canvas"></canvas>
+  <canvas id="exportCanvas"></canvas>
+
+  <script>
+    const ids = ['dropzone','fileInput','demoBtn','reRenderBtn','widthRange','scaleRange','spacingRange','lineHeightRange','brightnessRange','contrastRange','gammaRange','saturationRange','thresholdRange','paletteSelect','palettePreview','paletteInfo','customPalette','paletteCurveSelect','paletteSampleRange','paletteSampleLabel','reversePaletteBtn','dedupePaletteBtn','spacePaletteBtn','ditherSelect','invertToggle','edgeToggle','preserveToggle','wrapToggle','fitToggle','colorToggle','transparentPngToggle','draftToggle','lightToggle','output','status','widthLabel','scaleLabel','spacingLabel','lineHeightLabel','brightnessLabel','contrastLabel','gammaLabel','saturationLabel','thresholdLabel','exportScaleRange','exportScaleLabel','fgColor','bgColor','copyBtn','downloadBtn','pngBtn','htmlBtn','svgBtn','favoriteNowBtn','markdownBtn','copyMdBtn','resetBtn','clearSettingsBtn','clearFavoritesBtn','thumb','canvas','exportCanvas','tabCurrent','tabFavorites','currentView','favoritesView','favoritesList','favoriteSearch','exportFavoritesBtn','importFavoritesBtn','importFavoritesFile','addFavoriteBtn','undoBtn','redoBtn','cleanBtn','cropBtn','focusBtn','favoriteCountLabel','healthLines','healthColumns','healthShare','shareHealth','zoomOutBtn','zoomInBtn','zoomLabel','metricSize','metricChars','metricLines','metricColumns','metricRender'];
+    const els = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
+    const ctx = els.canvas.getContext('2d', { willReadFrequently:true });
+    const exportCtx = els.exportCanvas.getContext('2d');
+    const storageKey = 'asciiStudioV5';
+    let currentText = '', currentImage = null, currentColors = [], renderTimer = null, historyTimer = null, favorites = [], zoomSize = 8, history = [''], historyIndex = 0, suppressHistory = false, activeShareSize = '';
+
+    const palettes = {
+      dense:'@%#*+=-:. ',
+      mega:'█▓▒░@$&B8WM%#RQ0OZXYUJCLQpdbkhao*wmzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,"^`\'. ',
+      photographic:'██▓▓▒▒░░@@@%%%###MMMWWW&&&888BBQQ00OOoahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,"^`\'.   ',
+      architect:'█▉▊▋▌▍▎▏▇▆▅▄▃▂▁▓▒░╬╫╪╋┼┿╂┼╳╲╱╾╼━─│┆┊┄┈/\\|+x=-:. ',
+      halftone:'●⬤◉◎◍◌○◯∙·˙` ',
+      technical:'@%#&8$Q0O◇◆◈▣▦▩▧▨▤▥▢□△▽◁▷<>[]{}()?/\\|+=~-_:;,. ',
+      alphanumeric:'MWNQHB8RD0OZ$XKAUqpdbkhao*wmzcvunxrjft1{}[]?-_+~<>i!lI;:,. ',
+      noir:'█▓▒░@&%#MWNQHB8RDKX0OZ$S5P2YJLC7T1+;:,. ',
+      soft:'▓▒░◌○·` . ',
+      wire:'╬╫╪╋┼┿╂╳╲╱━─│┆┊┄┈/\\|+x=-:. ',
+      blocks:'█▓▒░ ',
+      classic:'#X+-. ',
+      sketch:'WMNQ0O?7!:-. ',
+      binary:'10 ',
+      smooth:'$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,"^`\'. ',
+      newspaper:'MW&8%B$#+=~-:. ',
+      dots:'●◉◎○◌· ',
+      braille:'⣿⣷⣶⣤⣀ ',
+      minimal:'#+-. ',
+      outline:'▉▇▆▅▄▃▂▁ ',
+      emoji:'🟫🟧🟨⬜'
+    };
+    const bayer = [[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
+    const shareLimits = {
+      imessage:{ label:'iMessage', cols:34 },
+      sms:{ label:'Tiny Text', cols:24 },
+      discord:{ label:'Discord', cols:72 },
+      slack:{ label:'Slack', cols:64 },
+      reddit:{ label:'Reddit', cols:96 },
+      email:{ label:'Email', cols:80 }
+    };
+
+    function clamp(n, min=0, max=255){ return Math.max(min, Math.min(max, n)); }
+    function setStatus(msg){ els.status.textContent = msg; }
+    function chars(){
+      const raw = els.paletteSelect.value === 'custom' ? (els.customPalette.value || palettes.dense) : (palettes[els.paletteSelect.value] || palettes.dense);
+      return Array.from(raw.length ? raw : palettes.dense);
+    }
+    function uniqueChars(raw){
+      return Array.from(new Set(Array.from(raw))).join('');
+    }
+    function updatePalettePreview(){
+      els.palettePreview.innerHTML = '';
+      const charset = chars();
+      const limit = Number(els.paletteSampleRange.value || 54);
+      charset.slice(0, limit).forEach(ch => {
+        const span = document.createElement('span');
+        span.textContent = ch === ' ' ? 'sp' : ch;
+        if (ch === ' ') span.style.width = '46px';
+        span.title = ch === ' ' ? 'space' : ch;
+        els.palettePreview.appendChild(span);
+      });
+      if (charset.length > limit) {
+        const span = document.createElement('span');
+        span.textContent = '+';
+        span.title = `${charset.length - limit} more characters`;
+        els.palettePreview.appendChild(span);
+      }
+      const uniqueCount = new Set(charset).size;
+      els.paletteInfo.innerHTML = `<span>${charset.length} symbols</span><span>${uniqueCount} unique</span><span>${els.paletteCurveSelect.value} curve</span>`;
+    }
+    function updateLabels(){
+      els.widthLabel.textContent = els.widthRange.value + ' ch';
+      els.scaleLabel.textContent = Number(els.scaleRange.value).toFixed(2);
+      els.spacingLabel.textContent = els.spacingRange.value + 'x';
+      els.lineHeightLabel.textContent = Number(els.lineHeightRange.value).toFixed(2);
+      els.brightnessLabel.textContent = els.brightnessRange.value;
+      els.contrastLabel.textContent = els.contrastRange.value;
+      els.gammaLabel.textContent = Number(els.gammaRange.value).toFixed(2);
+      els.saturationLabel.textContent = els.saturationRange.value + '%';
+      els.thresholdLabel.textContent = els.thresholdRange.value + '%';
+      els.exportScaleLabel.textContent = els.exportScaleRange.value + 'px';
+      els.paletteSampleLabel.textContent = els.paletteSampleRange.value;
+      els.zoomLabel.textContent = zoomSize + 'px';
+      els.output.style.fontSize = zoomSize + 'px';
+      els.output.style.lineHeight = els.lineHeightRange.value;
+      els.output.classList.toggle('wrap-lines', els.wrapToggle.checked);
+      document.documentElement.style.setProperty('--ascii-fg', els.fgColor.value);
+      document.documentElement.style.setProperty('--ascii-bg', els.bgColor.value);
+      updatePalettePreview();
+      updateSharePresetButtons();
+      updateOutputStats();
+    }
+    function outputStats(text=currentText){
+      const trimmed = text.replace(/\n$/, '');
+      if (!trimmed) return { lines:0, maxCols:0 };
+      const lines = trimmed.split('\n');
+      return { lines:lines.length, maxCols:Math.max(...lines.map(line => Array.from(line).length), 0) };
+    }
+    function updateOutputStats(){
+      const stats = outputStats();
+      els.metricLines.textContent = stats.lines.toLocaleString();
+      els.metricColumns.textContent = stats.maxCols.toLocaleString();
+      els.healthLines.textContent = stats.lines.toLocaleString();
+      els.healthColumns.textContent = stats.maxCols.toLocaleString();
+      const limit = shareLimits[activeShareSize];
+      els.shareHealth.classList.remove('warn');
+      if (!limit) {
+        els.healthShare.textContent = 'No share size';
+      } else if (stats.maxCols <= limit.cols) {
+        els.healthShare.textContent = `${limit.label} ready`;
+      } else {
+        els.healthShare.textContent = `${stats.maxCols - limit.cols} cols over`;
+        els.shareHealth.classList.add('warn');
+      }
+    }
+    function updateSharePresetButtons(){
+      document.querySelectorAll('.size-preset').forEach(btn => btn.classList.toggle('active', btn.dataset.size === activeShareSize));
+    }
+    function saveState(){
+      const settings = {};
+      ['widthRange','scaleRange','spacingRange','lineHeightRange','brightnessRange','contrastRange','gammaRange','saturationRange','thresholdRange','paletteSelect','customPalette','paletteCurveSelect','paletteSampleRange','ditherSelect','invertToggle','edgeToggle','preserveToggle','wrapToggle','fitToggle','colorToggle','transparentPngToggle','draftToggle','lightToggle','exportScaleRange','fgColor','bgColor'].forEach(id => {
+        const el = els[id];
+        settings[id] = el.type === 'checkbox' ? el.checked : el.value;
+      });
+      const draft = els.draftToggle.checked && currentText.length < 500000 ? currentText : '';
+      localStorage.setItem(storageKey, JSON.stringify({ settings, favorites, zoomSize, draft, activeShareSize }));
+    }
+    function restoreState(){
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        Object.entries(saved.settings || {}).forEach(([id, value]) => {
+          if (!els[id]) return;
+          if (els[id].type === 'checkbox') els[id].checked = !!value;
+          else els[id].value = value;
+        });
+        favorites = Array.isArray(saved.favorites) ? saved.favorites : [];
+        zoomSize = saved.zoomSize || zoomSize;
+        activeShareSize = saved.activeShareSize || '';
+        if (saved.settings?.draftToggle !== false && saved.draft) {
+          currentText = saved.draft;
+          els.output.value = saved.draft;
+          syncCurrentFromOutput();
+          pushHistory(saved.draft, true);
+          setStatus('Restored editor draft from this browser.');
+        }
+      } catch {}
+      document.body.classList.toggle('light', els.lightToggle.checked);
+      renderFavorites();
+      updateLabels();
+    }
+    function scheduleRender(){ saveState(); if (!els.fitToggle.checked || !currentImage) return; clearTimeout(renderTimer); renderTimer = setTimeout(() => renderASCII(currentImage), 70); }
+    function adjustedBrightness(r, g, b){
+      const brightness = Number(els.brightnessRange.value);
+      const contrast = Number(els.contrastRange.value);
+      const gamma = Number(els.gammaRange.value);
+      const saturation = Number(els.saturationRange.value) / 100;
+      const gray = 0.299*r + 0.587*g + 0.114*b;
+      r = gray + (r - gray) * saturation;
+      g = gray + (g - gray) * saturation;
+      b = gray + (b - gray) * saturation;
+      const c = (259 * (contrast + 255)) / (255 * (259 - contrast));
+      r = clamp(c * (r - 128) + 128 + brightness);
+      g = clamp(c * (g - 128) + 128 + brightness);
+      b = clamp(c * (b - 128) + 128 + brightness);
+      let v = (0.299*r + 0.587*g + 0.114*b) / 255;
+      v = Math.pow(v, 1 / gamma);
+      const thresholdMix = Number(els.thresholdRange.value) / 100;
+      if (thresholdMix) v = v * (1 - thresholdMix) + (v > .5 ? 1 : 0) * thresholdMix;
+      return clamp(v * 255);
+    }
+    function quantize(value, x, y, error=0){
+      let v = clamp(value + error);
+      if (els.ditherSelect.value === 'ordered') v = clamp(v + ((bayer[y % 4][x % 4] / 15) - .5) * 44);
+      if (els.invertToggle.checked) v = 255 - v;
+      return v;
+    }
+    function charFor(value, charset){
+      let n = 1 - value / 255;
+      if (els.paletteCurveSelect.value === 'shadow') n = Math.pow(n, .72);
+      else if (els.paletteCurveSelect.value === 'highlight') n = Math.pow(n, 1.45);
+      else if (els.paletteCurveSelect.value === 'poster') n = Math.round(n * 8) / 8;
+      else if (els.paletteCurveSelect.value === 'soft') n = n * n * (3 - 2 * n);
+      const index = Math.max(0, Math.min(charset.length - 1, Math.round(n * (charset.length - 1))));
+      return charset[index];
+    }
+    function colorStyle(r, g, b){ return `rgb(${Math.round(r)},${Math.round(g)},${Math.round(b)})`; }
+    function renderASCII(img){
+      const t0 = performance.now();
+      const width = parseInt(els.widthRange.value, 10);
+      const scale = parseFloat(els.scaleRange.value);
+      const spacing = parseInt(els.spacingRange.value, 10);
+      const charset = chars() || palettes.dense;
+      const height = els.preserveToggle.checked ? Math.max(1, Math.floor(width * (img.height / img.width) * scale)) : Math.max(1, Math.floor(width * scale));
+      els.canvas.width = width; els.canvas.height = height;
+      ctx.clearRect(0, 0, width, height);
+      ctx.drawImage(img, 0, 0, width, height);
+      const imageData = ctx.getImageData(0, 0, width, height);
+      const data = imageData.data;
+      const luminance = new Float32Array(width * height);
+      const colors = new Array(width * height);
+      for (let i = 0; i < width * height; i++) {
+        const p = i * 4;
+        luminance[i] = adjustedBrightness(data[p], data[p+1], data[p+2]);
+        colors[i] = [data[p], data[p+1], data[p+2]];
+      }
+      if (els.edgeToggle.checked) {
+        const copy = new Float32Array(luminance);
+        for (let y = 1; y < height - 1; y++) {
+          for (let x = 1; x < width - 1; x++) {
+            const i = y * width + x;
+            const gx = copy[i-1] * -1 + copy[i+1] + copy[i-width-1] * -1 + copy[i-width+1] + copy[i+width-1] * -1 + copy[i+width+1];
+            const gy = copy[i-width-1] * -1 + copy[i-width] * -1 + copy[i-width+1] * -1 + copy[i+width-1] + copy[i+width] + copy[i+width+1];
+            luminance[i] = clamp(copy[i] - Math.hypot(gx, gy) * .33);
+          }
+        }
+      }
+      const errors = ['floyd','atkinson'].includes(els.ditherSelect.value) ? new Float32Array(width * height) : null;
+      let ascii = '';
+      currentColors = [];
+      const spaces = ' '.repeat(Math.max(0, spacing - 1));
+      for (let y = 0; y < height; y++) {
+        let line = '';
+        const colorLine = [];
+        for (let x = 0; x < width; x++) {
+          const i = y * width + x;
+          const sourceValue = luminance[i] + (errors ? errors[i] : 0);
+          const v = quantize(sourceValue, x, y);
+          const ch = charFor(v, charset);
+          line += ch;
+          colorLine.push(colors[i]);
+          if (spacing > 1 && x < width - 1) line += spaces;
+          if (errors && els.ditherSelect.value === 'floyd') {
+            const nearest = Math.round(v / 255 * (charset.length - 1)) / Math.max(1, charset.length - 1) * 255;
+            const err = (sourceValue - nearest);
+            if (x + 1 < width) errors[i + 1] += err * 7 / 16;
+            if (y + 1 < height) {
+              if (x > 0) errors[i + width - 1] += err * 3 / 16;
+              errors[i + width] += err * 5 / 16;
+              if (x + 1 < width) errors[i + width + 1] += err * 1 / 16;
+            }
+          } else if (errors && els.ditherSelect.value === 'atkinson') {
+            const nearest = Math.round(v / 255 * (charset.length - 1)) / Math.max(1, charset.length - 1) * 255;
+            const err = (sourceValue - nearest) / 8;
+            if (x + 1 < width) errors[i + 1] += err;
+            if (x + 2 < width) errors[i + 2] += err;
+            if (y + 1 < height) {
+              if (x > 0) errors[i + width - 1] += err;
+              errors[i + width] += err;
+              if (x + 1 < width) errors[i + width + 1] += err;
+            }
+            if (y + 2 < height) errors[i + width * 2] += err;
+          }
+        }
+        ascii += line + '\n';
+        currentColors.push(colorLine);
+      }
+      currentText = ascii;
+      els.output.value = ascii;
+      const enabled = !!ascii.trim();
+      [els.copyBtn, els.downloadBtn, els.pngBtn, els.htmlBtn, els.svgBtn, els.markdownBtn, els.copyMdBtn, els.addFavoriteBtn, els.favoriteNowBtn, els.cleanBtn].forEach(btn => btn.disabled = !enabled);
+      els.reRenderBtn.disabled = !currentImage;
+      els.metricChars.textContent = ascii.length.toLocaleString();
+      updateOutputStats();
+      els.metricRender.textContent = Math.round(performance.now() - t0) + ' ms';
+      setStatus(`Rendered ${width} x ${height} characters with ${charset.length} symbols, ${els.ditherSelect.value} dithering.`);
+      pushHistory(ascii, true);
+      saveState();
+    }
+    function loadFile(file){
+      if (!file || !file.type.startsWith('image/')) { setStatus('Please choose an image file.'); return; }
+      const reader = new FileReader();
+      reader.onload = () => loadImage(reader.result, file.name);
+      reader.readAsDataURL(file);
+      setStatus('Loading image...');
+    }
+    function loadImage(src, name='image'){
+      const img = new Image();
+      img.onload = () => {
+        currentImage = img;
+        els.thumb.src = src;
+        els.thumb.style.display = 'block';
+        els.metricSize.textContent = `${img.naturalWidth || img.width} x ${img.naturalHeight || img.height}`;
+        renderASCII(img);
+        setStatus(`Loaded ${name}.`);
+      };
+      img.onerror = () => setStatus('Could not load that image.');
+      img.src = src;
+    }
+    function loadDemo(){
+      const c = document.createElement('canvas');
+      c.width = 900; c.height = 560;
+      const g = c.getContext('2d');
+      const grad = g.createLinearGradient(0, 0, c.width, c.height);
+      grad.addColorStop(0, '#0ea5e9'); grad.addColorStop(.45, '#111827'); grad.addColorStop(1, '#f59e0b');
+      g.fillStyle = grad; g.fillRect(0, 0, c.width, c.height);
+      g.fillStyle = 'rgba(255,255,255,.9)';
+      for (let i=0; i<28; i++) { g.beginPath(); g.arc(70 + i*31, 95 + Math.sin(i*.8)*46, 14 + (i%4)*8, 0, Math.PI*2); g.fill(); }
+      g.font = '900 140px system-ui'; g.fillText('ASCII', 180, 330);
+      loadImage(c.toDataURL('image/png'), 'demo gradient');
+    }
+    async function handleClipboardPaste(e){
+      for (const item of (e.clipboardData?.items || [])) {
+        if (item.type.startsWith('image/')) {
+          const file = item.getAsFile();
+          if (file) return loadFile(file);
+        }
+      }
+    }
+    async function copyCurrent(){ try { await navigator.clipboard.writeText(currentText); setStatus('ASCII copied to clipboard.'); } catch { setStatus('Copy failed. Select the output text manually.'); } }
+    function downloadBlob(blob, name){ const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = name; a.click(); URL.revokeObjectURL(url); }
+    function syncCurrentFromOutput(){
+      currentText = els.output.value;
+      els.metricChars.textContent = currentText.length.toLocaleString();
+      updateOutputStats();
+      const enabled = !!currentText.trim();
+      [els.copyBtn, els.downloadBtn, els.pngBtn, els.htmlBtn, els.svgBtn, els.markdownBtn, els.copyMdBtn, els.addFavoriteBtn, els.favoriteNowBtn, els.cleanBtn, els.cropBtn].forEach(btn => btn.disabled = !enabled);
+      if (!suppressHistory) {
+        clearTimeout(historyTimer);
+        historyTimer = setTimeout(() => pushHistory(currentText), 350);
+      }
+      if (els.draftToggle.checked) saveState();
+    }
+    function editableAction(fn){ syncCurrentFromOutput(); if (currentText.trim()) fn(); }
+    function downloadText(){ downloadBlob(new Blob([currentText], {type:'text/plain'}), 'ascii-art-v5.txt'); setStatus('Downloaded ascii-art-v5.txt.'); }
+    function markdownText(){ return `# ASCII Art v5\n\n\`\`\`text\n${currentText.replace(/\n$/, '')}\n\`\`\`\n`; }
+    async function copyMarkdown(){ try { await navigator.clipboard.writeText(markdownText()); setStatus('Markdown copied to clipboard.'); } catch { setStatus('Copy failed.'); } }
+    function downloadMarkdown(){ downloadBlob(new Blob([markdownText()], {type:'text/markdown'}), 'ascii-art-v5.md'); setStatus('Downloaded ascii-art-v5.md.'); }
+    function updateHistoryButtons(){ els.undoBtn.disabled = historyIndex <= 0; els.redoBtn.disabled = historyIndex >= history.length - 1; }
+    function pushHistory(text, force=false){
+      if (!force && history[historyIndex] === text) { updateHistoryButtons(); return; }
+      history = history.slice(0, historyIndex + 1);
+      history.push(text);
+      if (history.length > 60) history.shift();
+      historyIndex = history.length - 1;
+      updateHistoryButtons();
+    }
+    function applyHistory(index){
+      if (index < 0 || index >= history.length) return;
+      historyIndex = index;
+      suppressHistory = true;
+      els.output.value = history[historyIndex];
+      currentColors = [];
+      syncCurrentFromOutput();
+      suppressHistory = false;
+      updateHistoryButtons();
+    }
+    function cleanOutput(){
+      syncCurrentFromOutput();
+      const cleaned = currentText.replace(/[ \t]+$/gm, '').replace(/\n{3,}$/g, '\n\n');
+      els.output.value = cleaned;
+      currentColors = [];
+      syncCurrentFromOutput();
+      pushHistory(cleaned, true);
+      setStatus('Cleaned trailing spaces and extra blank lines.');
+    }
+    function cropBlankBorder(){
+      syncCurrentFromOutput();
+      const rows = currentText.replace(/\n$/, '').split('\n');
+      const nonBlankRows = rows.map((row, idx) => /\S/.test(row) ? idx : -1).filter(idx => idx >= 0);
+      if (!nonBlankRows.length) return;
+      const top = nonBlankRows[0];
+      const bottom = nonBlankRows[nonBlankRows.length - 1];
+      const slice = rows.slice(top, bottom + 1);
+      const first = Math.min(...slice.filter(row => /\S/.test(row)).map(row => row.search(/\S/)));
+      const last = Math.max(...slice.map(row => {
+        const match = row.match(/\S\s*$/);
+        return match ? match.index : 0;
+      }));
+      const cropped = slice.map(row => row.slice(first, last + 1).replace(/[ \t]+$/g, '')).join('\n') + '\n';
+      els.output.value = cropped;
+      currentColors = [];
+      syncCurrentFromOutput();
+      pushHistory(cropped, true);
+      setStatus('Cropped blank border around the ASCII art.');
+    }
+    function downloadPNG(){
+      const lines = currentText.replace(/\n$/, '').split('\n');
+      const fontSize = parseInt(els.exportScaleRange.value, 10);
+      const lineHeight = Math.round(fontSize * Number(els.lineHeightRange.value));
+      const pad = Math.max(18, fontSize * 2);
+      const measure = document.createElement('canvas').getContext('2d');
+      measure.font = `${fontSize}px SFMono-Regular, Consolas, monospace`;
+      const maxWidth = Math.max(...lines.map(line => measure.measureText(line).width), 10);
+      els.exportCanvas.width = Math.ceil(maxWidth + pad * 2);
+      els.exportCanvas.height = Math.ceil(lines.length * lineHeight + pad * 2);
+      exportCtx.clearRect(0, 0, els.exportCanvas.width, els.exportCanvas.height);
+      if (!els.transparentPngToggle.checked) {
+        exportCtx.fillStyle = els.bgColor.value;
+        exportCtx.fillRect(0, 0, els.exportCanvas.width, els.exportCanvas.height);
+      }
+      exportCtx.font = `${fontSize}px SFMono-Regular, Consolas, monospace`;
+      exportCtx.textBaseline = 'top';
+      if (els.colorToggle.checked && currentColors.length) {
+        const charWidth = measure.measureText('M').width;
+        const spacing = parseInt(els.spacingRange.value, 10);
+        lines.forEach((line, y) => Array.from(line).forEach((ch, x) => {
+          const sourceX = Math.min(Math.floor(x / spacing), currentColors[y]?.length - 1 || 0);
+          const color = currentColors[y]?.[sourceX] || [248,250,252];
+          exportCtx.fillStyle = colorStyle(...color);
+          exportCtx.fillText(ch, pad + x * charWidth, pad + y * lineHeight);
+        }));
+      } else {
+        exportCtx.fillStyle = els.fgColor.value;
+        lines.forEach((line, idx) => exportCtx.fillText(line, pad, pad + idx * lineHeight));
+      }
+      els.exportCanvas.toBlob(blob => { downloadBlob(blob, 'ascii-art-v5.png'); setStatus('Downloaded ascii-art-v5.png.'); }, 'image/png');
+    }
+    function escapeHtml(s){ return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+    function downloadHTML(){
+      let body = escapeHtml(currentText);
+      if (els.colorToggle.checked && currentColors.length) {
+        const lines = currentText.replace(/\n$/, '').split('\n');
+        body = lines.map((line, y) => [...line].map((ch, x) => {
+          const spacing = parseInt(els.spacingRange.value, 10);
+          const sourceX = Math.min(Math.floor(x / spacing), currentColors[y]?.length - 1 || 0);
+          const color = currentColors[y]?.[sourceX] || [248,250,252];
+          return `<span style="color:${colorStyle(...color)}">${escapeHtml(ch)}</span>`;
+        }).join('')).join('\n');
+      }
+      const html = `<!doctype html><meta charset="utf-8"><title>ASCII Art v5</title><pre style="margin:0;padding:24px;background:${els.bgColor.value};color:${els.fgColor.value};font:${zoomSize}px/${els.lineHeightRange.value} SFMono-Regular,Consolas,monospace;white-space:pre;overflow:auto">${body}</pre>`;
+      downloadBlob(new Blob([html], {type:'text/html'}), 'ascii-art-v5.html');
+      setStatus('Downloaded ascii-art-v5.html.');
+    }
+    function downloadSVG(){
+      const lines = currentText.replace(/\n$/, '').split('\n');
+      const fontSize = parseInt(els.exportScaleRange.value, 10);
+      const lineHeight = Math.round(fontSize * Number(els.lineHeightRange.value));
+      const charWidth = fontSize * .62;
+      const pad = Math.max(18, fontSize * 2);
+      const width = Math.ceil(Math.max(...lines.map(line => Array.from(line).length), 1) * charWidth + pad * 2);
+      const height = Math.ceil(lines.length * lineHeight + pad * 2);
+      const textLines = lines.map((line, idx) => `<text x="${pad}" y="${pad + (idx + 1) * lineHeight}">${escapeHtml(line)}</text>`).join('');
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"><rect width="100%" height="100%" fill="${els.bgColor.value}"/><g fill="${els.fgColor.value}" font-family="SFMono-Regular,Consolas,monospace" font-size="${fontSize}" xml:space="preserve">${textLines}</g></svg>`;
+      downloadBlob(new Blob([svg], {type:'image/svg+xml'}), 'ascii-art-v5.svg');
+      setStatus('Downloaded ascii-art-v5.svg.');
+    }
+    function renderFavorites(){
+      els.favoritesList.innerHTML = '';
+      const query = (els.favoriteSearch?.value || '').trim().toLowerCase();
+      const visible = favorites
+        .map((fav, idx) => ({ fav, idx }))
+        .filter(({ fav }) => !query || `${fav.name || ''} ${fav.text || ''}`.toLowerCase().includes(query));
+      if (!favorites.length) {
+        const empty = document.createElement('div');
+        empty.className = 'hint';
+        empty.textContent = 'Saved favorites will appear here and stay in this browser until you clear them.';
+        els.favoritesList.appendChild(empty);
+      }
+      if (favorites.length && !visible.length) {
+        const empty = document.createElement('div');
+        empty.className = 'hint';
+        empty.textContent = 'No favorites match that search.';
+        els.favoritesList.appendChild(empty);
+      }
+      visible.forEach(({ fav, idx }) => {
+        const item = document.createElement('div'); item.className = 'favorite-item';
+        const head = document.createElement('div'); head.className = 'favorite-header';
+        const title = document.createElement('div'); title.className = 'favorite-title'; title.textContent = fav.name || `Favorite ${idx + 1}`;
+        const actions = document.createElement('div'); actions.className = 'toolbar';
+        const load = document.createElement('button'); load.className = 'small'; load.textContent = 'Load'; load.onclick = () => { currentText = fav.text; currentColors = []; els.output.value = fav.text; syncCurrentFromOutput(); switchTab('current'); setStatus(`Loaded "${title.textContent}".`); };
+        const copy = document.createElement('button'); copy.className = 'secondary small'; copy.textContent = 'Copy'; copy.onclick = async () => { await navigator.clipboard.writeText(fav.text); setStatus(`Copied "${title.textContent}".`); };
+        const rename = document.createElement('button'); rename.className = 'secondary small'; rename.textContent = 'Rename'; rename.onclick = () => { const next = prompt('Rename favorite:', fav.name || `Favorite ${idx + 1}`); if (next !== null) { fav.name = next.trim() || null; renderFavorites(); saveState(); } };
+        const style = document.createElement('button'); style.className = 'secondary small'; style.textContent = 'Style'; style.disabled = !fav.settings; style.onclick = () => { applyFavoriteSettings(fav.settings); setStatus(`Restored style from "${title.textContent}".`); };
+        const save = document.createElement('button'); save.className = 'secondary small'; save.textContent = 'TXT'; save.onclick = () => { downloadBlob(new Blob([fav.text], {type:'text/plain'}), `${safeName(fav.name || 'ascii-favorite')}.txt`); setStatus(`Downloaded "${title.textContent}".`); };
+        const del = document.createElement('button'); del.className = 'secondary small'; del.textContent = 'Delete'; del.onclick = () => { favorites.splice(idx, 1); renderFavorites(); saveState(); };
+        actions.append(load, copy, style, rename, save, del); head.append(title, actions);
+        const meta = document.createElement('div'); meta.className = 'favorite-meta'; meta.textContent = favoriteMeta(fav);
+        const pre = document.createElement('pre'); pre.className = 'favorite-preview'; pre.textContent = fav.text.slice(0, 6000);
+        item.append(head, meta, pre); els.favoritesList.appendChild(item);
+      });
+      els.favoriteCountLabel.textContent = favorites.length === 1 ? '1 favorite saved locally' : `${favorites.length} favorites saved locally`;
+    }
+    function safeName(name){ return String(name).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'ascii-art'; }
+    function favoriteMeta(fav){
+      const lines = (fav.text || '').replace(/\n$/, '').split('\n').length;
+      const chars = (fav.text || '').length.toLocaleString();
+      const date = fav.created ? new Date(fav.created).toLocaleString([], { month:'short', day:'numeric', hour:'numeric', minute:'2-digit' }) : 'saved locally';
+      return `${lines} lines · ${chars} chars · ${date}`;
+    }
+    function addFavorite(){
+      syncCurrentFromOutput();
+      if (!currentText.trim()) return;
+      const name = prompt('Name this favorite:', `ASCII ${favorites.length + 1}`);
+      favorites.unshift({ name: (name || '').trim() || null, text: currentText, created: Date.now(), settings: snapshotSettings() });
+      renderFavorites(); saveState(); setStatus('Saved current ASCII art as a favorite.');
+    }
+    function snapshotSettings(){
+      const settings = {};
+      ['widthRange','scaleRange','spacingRange','lineHeightRange','brightnessRange','contrastRange','gammaRange','saturationRange','thresholdRange','paletteSelect','customPalette','paletteCurveSelect','paletteSampleRange','ditherSelect','invertToggle','edgeToggle','preserveToggle','wrapToggle','colorToggle','transparentPngToggle','exportScaleRange','fgColor','bgColor'].forEach(id => {
+        const el = els[id];
+        settings[id] = el.type === 'checkbox' ? el.checked : el.value;
+      });
+      return settings;
+    }
+    function applyFavoriteSettings(settings){
+      Object.entries(settings || {}).forEach(([id, value]) => {
+        if (!els[id]) return;
+        if (els[id].type === 'checkbox') els[id].checked = !!value;
+        else els[id].value = value;
+      });
+      document.body.classList.toggle('light', els.lightToggle.checked);
+      updateLabels();
+      scheduleRender();
+    }
+    function exportFavorites(){
+      const payload = { app:'Image to ASCII Studio v5', exported: new Date().toISOString(), favorites };
+      downloadBlob(new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'}), 'ascii-favorites-v5.json');
+      setStatus('Exported favorites JSON.');
+    }
+    function importFavorites(file){
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          const incoming = Array.isArray(data) ? data : data.favorites;
+          if (!Array.isArray(incoming)) throw new Error('No favorites array');
+          const clean = incoming.filter(item => item && typeof item.text === 'string').map(item => ({
+            name: typeof item.name === 'string' ? item.name : null,
+            text: item.text,
+            created: item.created || Date.now(),
+            settings: item.settings || null
+          }));
+          favorites = [...clean, ...favorites].slice(0, 200);
+          renderFavorites(); saveState(); switchTab('favorites'); setStatus(`Imported ${clean.length} favorites.`);
+        } catch {
+          setStatus('Could not import that favorites file.');
+        }
+      };
+      reader.readAsText(file);
+      els.importFavoritesFile.value = '';
+    }
+    function switchTab(which){
+      const current = which === 'current';
+      els.currentView.style.display = current ? 'block' : 'none';
+      els.favoritesView.style.display = current ? 'none' : 'block';
+      els.tabCurrent.classList.toggle('active', current);
+      els.tabFavorites.classList.toggle('active', !current);
+    }
+    function applyPreset(name){
+      const preset = {
+        poster:{ widthRange:180, scaleRange:.48, lineHeightRange:1, contrastRange:35, saturationRange:115, thresholdRange:12, ditherSelect:'ordered', paletteSelect:'dense', paletteCurveSelect:'poster', edgeToggle:false, colorToggle:false },
+        terminal:{ widthRange:120, scaleRange:.50, lineHeightRange:1, contrastRange:18, saturationRange:100, thresholdRange:0, ditherSelect:'none', paletteSelect:'dense', paletteCurveSelect:'linear', edgeToggle:false, colorToggle:false },
+        stencil:{ widthRange:150, scaleRange:.46, lineHeightRange:.9, contrastRange:70, saturationRange:0, thresholdRange:78, ditherSelect:'none', paletteSelect:'classic', paletteCurveSelect:'poster', edgeToggle:true, colorToggle:false },
+        micro:{ widthRange:72, scaleRange:.44, lineHeightRange:.85, contrastRange:28, saturationRange:100, thresholdRange:5, ditherSelect:'floyd', paletteSelect:'blocks', paletteCurveSelect:'soft', edgeToggle:false, colorToggle:false },
+        comic:{ widthRange:145, scaleRange:.52, lineHeightRange:1.05, contrastRange:42, saturationRange:165, thresholdRange:18, ditherSelect:'atkinson', paletteSelect:'halftone', paletteCurveSelect:'highlight', edgeToggle:true, colorToggle:true },
+        blueprint:{ widthRange:165, scaleRange:.47, lineHeightRange:.95, contrastRange:55, saturationRange:40, thresholdRange:25, ditherSelect:'ordered', paletteSelect:'architect', paletteCurveSelect:'shadow', edgeToggle:true, colorToggle:false, fgColor:'#bae6fd', bgColor:'#082f49' },
+        photo:{ widthRange:240, scaleRange:.50, lineHeightRange:.95, contrastRange:22, saturationRange:110, thresholdRange:0, ditherSelect:'floyd', paletteSelect:'photographic', paletteCurveSelect:'linear', edgeToggle:false, colorToggle:true },
+        emoji:{ widthRange:84, scaleRange:.50, lineHeightRange:1.15, contrastRange:20, saturationRange:180, thresholdRange:8, ditherSelect:'ordered', paletteSelect:'emoji', paletteCurveSelect:'poster', edgeToggle:false, colorToggle:false }
+      }[name];
+      activeShareSize = '';
+      Object.entries(preset).forEach(([id, value]) => { if (els[id].type === 'checkbox') els[id].checked = value; else els[id].value = value; });
+      updateLabels(); scheduleRender(); setStatus(`Applied ${name} preset.`);
+    }
+    function applySizePreset(name){
+      const preset = {
+        imessage:{ widthRange:34, scaleRange:.48, spacingRange:1, lineHeightRange:1.1, exportScaleRange:18, zoom:12, paletteSelect:'blocks', ditherSelect:'ordered', thresholdRange:10 },
+        sms:{ widthRange:24, scaleRange:.45, spacingRange:1, lineHeightRange:1.15, exportScaleRange:20, zoom:13, paletteSelect:'minimal', ditherSelect:'none', thresholdRange:18 },
+        discord:{ widthRange:72, scaleRange:.50, spacingRange:1, lineHeightRange:1, exportScaleRange:14, zoom:9, paletteSelect:'dense', ditherSelect:'floyd', thresholdRange:0 },
+        slack:{ widthRange:64, scaleRange:.50, spacingRange:1, lineHeightRange:1, exportScaleRange:14, zoom:9, paletteSelect:'dense', ditherSelect:'ordered', thresholdRange:0 },
+        reddit:{ widthRange:96, scaleRange:.50, spacingRange:1, lineHeightRange:1, exportScaleRange:13, zoom:8, paletteSelect:'photographic', ditherSelect:'floyd', thresholdRange:0 },
+        email:{ widthRange:80, scaleRange:.50, spacingRange:1, lineHeightRange:1.05, exportScaleRange:14, zoom:9, paletteSelect:'classic', ditherSelect:'ordered', thresholdRange:8 }
+      }[name];
+      activeShareSize = name;
+      Object.entries(preset).forEach(([id, value]) => {
+        if (id === 'zoom') zoomSize = value;
+        else if (els[id].type === 'checkbox') els[id].checked = value;
+        else els[id].value = value;
+      });
+      updateLabels(); scheduleRender(); setStatus(`Applied ${name === 'sms' ? 'tiny text' : name} share size.`);
+    }
+    function editCustomPalette(transform, message){
+      const base = els.paletteSelect.value === 'custom' ? (els.customPalette.value || palettes.dense) : (palettes[els.paletteSelect.value] || palettes.dense);
+      els.paletteSelect.value = 'custom';
+      els.customPalette.value = transform(base);
+      updateLabels();
+      scheduleRender();
+      setStatus(message);
+    }
+    function setDefaultSettings(){
+      Object.assign(els.widthRange, {value:130}); Object.assign(els.scaleRange, {value:.50}); Object.assign(els.spacingRange, {value:1}); Object.assign(els.lineHeightRange, {value:1});
+      Object.assign(els.brightnessRange, {value:0}); Object.assign(els.contrastRange, {value:10}); Object.assign(els.gammaRange, {value:1}); Object.assign(els.saturationRange, {value:100}); Object.assign(els.thresholdRange, {value:0});
+      els.paletteSelect.value = 'dense'; els.customPalette.value = palettes.dense; els.paletteCurveSelect.value = 'linear'; els.paletteSampleRange.value = 54; els.ditherSelect.value = 'none';
+      ['invertToggle','edgeToggle','wrapToggle','colorToggle','transparentPngToggle','lightToggle'].forEach(id => els[id].checked = false);
+      ['preserveToggle','fitToggle','draftToggle'].forEach(id => els[id].checked = true);
+      els.exportScaleRange.value = 14; els.fgColor.value = '#f8fafc'; els.bgColor.value = '#030507'; zoomSize = 8;
+      activeShareSize = '';
+      document.body.classList.remove('light');
+      updateLabels();
+    }
+    function clearSettings(){
+      setDefaultSettings();
+      scheduleRender();
+      setStatus('Settings cleared to defaults. Current image, output, and favorites were kept.');
+    }
+    function resetAll(){
+      currentText = ''; currentImage = null; currentColors = [];
+      els.fileInput.value = ''; els.output.value = ''; els.thumb.removeAttribute('src'); els.thumb.style.display = 'none';
+      setDefaultSettings();
+      [els.copyBtn, els.downloadBtn, els.pngBtn, els.htmlBtn, els.svgBtn, els.markdownBtn, els.copyMdBtn, els.addFavoriteBtn, els.favoriteNowBtn, els.cleanBtn, els.cropBtn, els.reRenderBtn].forEach(btn => btn.disabled = true);
+      els.metricSize.textContent = '-'; els.metricChars.textContent = '0'; els.metricRender.textContent = '0 ms'; updateOutputStats();
+      history = ['']; historyIndex = 0; updateHistoryButtons();
+      renderFavorites(); updateLabels(); saveState(); setStatus('Workspace reset. Favorites are still saved locally.');
+    }
+    function handleShortcuts(e){
+      const mod = e.metaKey || e.ctrlKey;
+      if (e.key === 'Escape' && document.body.classList.contains('focus-mode')) {
+        document.body.classList.remove('focus-mode');
+        els.focusBtn.textContent = 'Focus';
+        return;
+      }
+      if (!mod) return;
+      if (e.key === 'Enter') { e.preventDefault(); currentImage ? renderASCII(currentImage) : setStatus('Load an image before rendering.'); }
+      if (e.key.toLowerCase() === 's') { e.preventDefault(); addFavorite(); }
+      if (e.key.toLowerCase() === 'e') { e.preventDefault(); editableAction(downloadText); }
+      if (e.key.toLowerCase() === 'f') { e.preventDefault(); switchTab('favorites'); els.favoriteSearch.focus(); }
+    }
+
+    els.fileInput.addEventListener('change', e => loadFile(e.target.files[0]));
+    els.demoBtn.addEventListener('click', loadDemo);
+    els.reRenderBtn.addEventListener('click', () => currentImage && renderASCII(currentImage));
+    els.dropzone.addEventListener('click', () => els.fileInput.click());
+    els.dropzone.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); els.fileInput.click(); } });
+    ['dragenter','dragover'].forEach(evt => els.dropzone.addEventListener(evt, e => { e.preventDefault(); els.dropzone.classList.add('dragover'); }));
+    ['dragleave','drop'].forEach(evt => els.dropzone.addEventListener(evt, e => { e.preventDefault(); els.dropzone.classList.remove('dragover'); }));
+    els.dropzone.addEventListener('drop', e => { const f = e.dataTransfer.files?.[0]; if (f) loadFile(f); });
+    document.addEventListener('paste', handleClipboardPaste);
+    document.querySelectorAll('.preset').forEach(btn => btn.addEventListener('click', () => applyPreset(btn.dataset.preset)));
+    document.querySelectorAll('.size-preset').forEach(btn => btn.addEventListener('click', () => applySizePreset(btn.dataset.size)));
+    ['widthRange','scaleRange','spacingRange','lineHeightRange','brightnessRange','contrastRange','gammaRange','saturationRange','thresholdRange','customPalette','paletteSampleRange','exportScaleRange','fgColor','bgColor'].forEach(id => els[id].addEventListener('input', () => { updateLabels(); scheduleRender(); }));
+    ['paletteSelect','paletteCurveSelect','ditherSelect','invertToggle','edgeToggle','preserveToggle','wrapToggle','fitToggle','colorToggle','transparentPngToggle','draftToggle','lightToggle'].forEach(id => els[id].addEventListener('change', () => { document.body.classList.toggle('light', els.lightToggle.checked); updateLabels(); scheduleRender(); }));
+    els.paletteSelect.addEventListener('change', () => { if (els.paletteSelect.value !== 'custom') els.customPalette.value = palettes[els.paletteSelect.value] || palettes.dense; });
+    els.reversePaletteBtn.addEventListener('click', () => editCustomPalette(raw => Array.from(raw).reverse().join(''), 'Reversed the custom palette.'));
+    els.dedupePaletteBtn.addEventListener('click', () => editCustomPalette(raw => uniqueChars(raw), 'Removed repeated symbols from the custom palette.'));
+    els.spacePaletteBtn.addEventListener('click', () => editCustomPalette(raw => raw.endsWith(' ') ? raw : raw + ' ', 'Added a lightest-tone space to the custom palette.'));
+    els.output.addEventListener('input', () => { currentColors = []; syncCurrentFromOutput(); });
+    els.copyBtn.addEventListener('click', () => editableAction(copyCurrent));
+    els.downloadBtn.addEventListener('click', () => editableAction(downloadText));
+    els.pngBtn.addEventListener('click', () => editableAction(downloadPNG));
+    els.htmlBtn.addEventListener('click', () => editableAction(downloadHTML));
+    els.svgBtn.addEventListener('click', () => editableAction(downloadSVG));
+    els.markdownBtn.addEventListener('click', () => editableAction(downloadMarkdown));
+    els.copyMdBtn.addEventListener('click', () => editableAction(copyMarkdown));
+    els.favoriteNowBtn.addEventListener('click', addFavorite);
+    els.resetBtn.addEventListener('click', resetAll);
+    els.clearSettingsBtn.addEventListener('click', clearSettings);
+    els.clearFavoritesBtn.addEventListener('click', () => { if (confirm('Clear all saved favorites from this browser?')) { favorites = []; renderFavorites(); saveState(); setStatus('Favorites cleared.'); } });
+    els.favoriteSearch.addEventListener('input', renderFavorites);
+    els.exportFavoritesBtn.addEventListener('click', exportFavorites);
+    els.importFavoritesBtn.addEventListener('click', () => els.importFavoritesFile.click());
+    els.importFavoritesFile.addEventListener('change', e => importFavorites(e.target.files[0]));
+    els.tabCurrent.addEventListener('click', () => switchTab('current'));
+    els.tabFavorites.addEventListener('click', () => switchTab('favorites'));
+    els.addFavoriteBtn.addEventListener('click', addFavorite);
+    els.undoBtn.addEventListener('click', () => applyHistory(historyIndex - 1));
+    els.redoBtn.addEventListener('click', () => applyHistory(historyIndex + 1));
+    els.cleanBtn.addEventListener('click', cleanOutput);
+    els.cropBtn.addEventListener('click', cropBlankBorder);
+    els.focusBtn.addEventListener('click', () => { const on = document.body.classList.toggle('focus-mode'); els.focusBtn.textContent = on ? 'Exit Focus' : 'Focus'; });
+    els.zoomOutBtn.addEventListener('click', () => { zoomSize = Math.max(5, zoomSize - 1); updateLabels(); saveState(); });
+    els.zoomInBtn.addEventListener('click', () => { zoomSize = Math.min(24, zoomSize + 1); updateLabels(); saveState(); });
+    document.addEventListener('keydown', handleShortcuts);
+    restoreState();
+    updateHistoryButtons();
+  </script>
+</body>
+</html>

@@ -4,9 +4,11 @@ I'm currently making Scratch projects and will make some python, maybe. I also p
 
 **Links**
 
-[Sullybase](https://sullydux.github.io/sullydux/)
+[My website: Sullybase](https://sullydux.github.io/sullydux/)
 
 [Scratch](https://scratch.mit.edu/users/sullydux/)
+
+[My friends ASCII generator](https://scratch.mit.edu/users/sullydux/ASCII-studio.html)
 
 ---
 
