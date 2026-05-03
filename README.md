@@ -8,7 +8,7 @@ I'm currently making Scratch projects and will make some python, maybe. I also p
 
 [Scratch](https://scratch.mit.edu/users/sullydux/)
 
-[My friends ASCII generator](https://scratch.mit.edu/users/sullydux/ASCII-studio.html)
+[My friends ASCII generator](https://sullydux.github.io/sullydux/ASCII-studio.html)
 
 ---
 
