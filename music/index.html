@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sully Music</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+  :root {
+    --window-bg: #0b0f14;
+    --panel-bg: #121821;
+    --panel-alt: #18212c;
+    --accent: #59c9a5;
+    --accent-active: #76ddb9;
+    --text-main: #f5f7fa;
+    --text-muted: #97a6b5;
+    --border: #263241;
+    --list-bg: #0f141c;
+    --error: #e95f5f;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    background: var(--window-bg);
+    color: var(--text-main);
+    min-height: 100vh;
+  }
+
+  .outer {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 22px;
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 18px;
+  }
+
+  .panel {
+    background: var(--panel-bg);
+    padding: 26px;
+    border-radius: 12px;
+  }
+
+  .panel-alt {
+    background: var(--panel-alt);
+    padding: 22px;
+    border-radius: 12px;
+  }
+
+  .muted { color: var(--text-muted); }
+
+  .title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    max-width: 520px;
+    word-wrap: break-word;
+  }
+
+  .meta {
+    font-size: 13px;
+    margin-bottom: 26px;
+  }
+
+  .btn {
+    background: var(--panel-alt);
+    color: var(--text-main);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .btn:hover { background: var(--accent); color: #06110d; }
+  .btn:active { background: var(--accent-active); color: #06110d; }
+
+  .range {
+    width: 100%;
+    accent-color: var(--accent);
+  }
+
+  .time-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-bottom: 32px;
+    color: var(--text-muted);
+  }
+
+  .controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+
+  .volume-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: var(--panel-alt);
+    border-radius: 12px;
+  }
+
+  .volume-row label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-muted);
+  }
+
+  .volume-slider {
+    flex: 1;
+    accent-color: var(--accent);
+  }
+
+  .library-header {
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+  }
+
+  .playlist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: var(--list-bg);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    max-height: 480px;
+    overflow-y: auto;
+    font-size: 13px;
+  }
+
+  .playlist-item {
+    padding: 10px 14px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+  }
+
+  .playlist-item:last-child { border-bottom: none; }
+
+  .playlist-item span.name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .playlist-item span.badge {
+    font-size: 11px;
+    color: var(--text-muted);
+    opacity: 0.8;
+  }
+
+  .playlist-item.active {
+    background: var(--accent);
+    color: #06110d;
+  }
+
+  .playlist-item.active span.badge {
+    color: #06110d;
+    opacity: 0.9;
+  }
+
+  .playlist-item:hover { background: #16202c; }
+  .playlist-item.active:hover { background: var(--accent-active); }
+
+  .status-bar {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .pin-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(11, 15, 20, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+
+  .pin-card {
+    background: var(--panel-bg);
+    color: var(--text-main);
+    border-radius: 12px;
+    padding: 32px;
+    max-width: 420px;
+    text-align: center;
+  }
+
+  .pin-card h2 {
+    margin-bottom: 16px;
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .pin-card input {
+    font-size: 16px;
+    padding: 12px 14px;
+    width: 100%;
+    background: var(--panel-alt);
+    color: var(--text-main);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+
+  .pin-card .attempts {
+    margin-bottom: 4px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .pin-card .error { color: var(--error); }
+
+  .hidden { display: none; }
+
+  @media (max-width: 900px) {
+    .outer { grid-template-columns: 1fr; padding: 16px; }
+  }
+  </style>
+</head>
+<body>
+  <!-- Main app -->
+  <div id="app" class="hidden">
+    <div class="outer">
+      <div class="panel left-column">
+        <div class="title">Now Playing</div>
+        <div id="track-title" class="title">No song loaded</div>
+        <div id="track-meta" class="meta muted">Ready</div>
+
+        <input id="progress" class="range" type="range" min="0" max="1" step="0.1" value="0" />
+
+        <div class="time-row">
+          <span id="elapsed">0:00</span>
+          <span id="remaining">-0:00</span>
+        </div>
+
+        <div class="controls">
+          <button id="prev-btn" class="btn">Previous</button>
+          <button id="play-btn" class="btn">Play</button>
+          <button id="next-btn" class="btn">Next</button>
+        </div>
+
+        <div class="volume-row">
+          <label for="volume">Volume</label>
+          <input id="volume" class="volume-slider" type="range" min="0" max="1" step="0.01" value="0.85" />
+        </div>
+
+        <div id="status" class="status-bar">
+          Initializing…
+        </div>
+
+        <button id="logout-btn" class="btn" style="margin-top: 16px; width: 100%;">Logout</button>
+      </div>
+
+      <div class="panel-alt right-column">
+        <div class="library-header">Library</div>
+        <button id="load-folder-btn" class="btn" style="width: 100%; margin-bottom: 12px;">Load music folder</button>
+        <input id="folder-input" type="file" webkitdirectory directory multiple class="hidden" />
+        <input id="search-input" type="text" placeholder="Search tracks..." style="width: 100%; padding: 8px; margin-bottom: 12px; background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border); border-radius: 6px; font-size: 13px;" />
+        <ul id="playlist" class="playlist"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PIN overlay -->
+  <div id="pin-overlay" class="hidden pin-overlay">
+    <div class="pin-card">
+      <h2>Enter PIN</h2>
+      <p class="attempts">Attempts left: <span id="pin-attempts">3</span></p>
+      <input type="password" id="pin-input" maxlength="6" inputmode="numeric" placeholder="Six‑digit PIN" autocomplete="off" />
+      <div id="pin-error" class="muted" style="margin-top: 8px;"></div>
+      <button id="pin-submit" class="btn" style="margin-top: 16px;">Unlock</button>
+    </div>
+  </div>
+
+  <script>
+    console.log("Script starting…");
+
+    const CONTROL_PATH = "1.txt";      // controls behavior
+  const STORAGE_KEY = "sully-music-catalog-v1";
+  const SESSION_KEY = "sully-music-session-v1";
+  const VOLUME_KEY = "sully-music-volume-v1";
+  const CURRENT_TRACK_KEY = "sully-music-current-track-v1";
+  const ALLOWED_AUDIO_EXTENSIONS = [".mp3", ".m4a", ".wav", ".ogg", ".aac"];
+  const objectUrls = [];
+    // PIN: 326150 → base64 "MzI2MTUw"
+    const PIN_ENCODED = "MzI2MTUw";
+
+    let catalog = null;
+    let currentIndex = 0;
+    let audio = null;
+    let isSeeking = false;
+    let pinAttempts = 3;
+    let behaviorFlag = "0"; // "0", "1", "2"
+    let filteredTracks = []; // for search
+    let isSearchActive = false;
+
+    const appEl = document.getElementById("app");
+    const pinOverlayEl = document.getElementById("pin-overlay");
+    const pinAttempsEl = document.getElementById("pin-attempts");
+    const pinInputEl = document.getElementById("pin-input");
+    const pinErrorEl = document.getElementById("pin-error");
+    const pinSubmitBtn = document.getElementById("pin-submit");
+
+    const trackTitleEl = document.getElementById("track-title");
+    const trackMetaEl = document.getElementById("track-meta");
+    const progressEl = document.getElementById("progress");
+    const elapsedEl = document.getElementById("elapsed");
+    const remainingEl = document.getElementById("remaining");
+    const playBtn = document.getElementById("play-btn");
+    const prevBtn = document.getElementById("prev-btn");
+    const nextBtn = document.getElementById("next-btn");
+    const volumeEl = document.getElementById("volume");
+    const playlistEl = document.getElementById("playlist");
+    const statusEl = document.getElementById("status");
+    const logoutBtn = document.getElementById("logout-btn");
+    const searchInputEl = document.getElementById("search-input");
+
+    function formatTime(seconds) {
+      if (seconds == null || !isFinite(seconds) || seconds < 0) seconds = 0;
+      const total = Math.round(seconds);
+      let minutes = Math.floor(total / 60);
+      const hrs = Math.floor(minutes / 60);
+      const secs = total % 60;
+      minutes = minutes % 60;
+      if (hrs > 0) return hrs + ":" + String(minutes).padStart(2, "0") + ":" + String(secs).padStart(2, "0");
+      return minutes + ":" + String(secs).padStart(2, "0");
+    }
+
+    function showStatus(msg) {
+      console.log("STATUS:", msg);
+      if (statusEl) statusEl.textContent = msg;
+    }
+
+    function showApp() {
+      console.log("showApp()");
+      appEl.classList.remove("hidden");
+      pinOverlayEl.classList.add("hidden");
+    }
+
+    function showPINOverlay() {
+      console.log("showPINOverlay()");
+      appEl.classList.add("hidden");
+      pinOverlayEl.classList.remove("hidden");
+      pinAttempsEl.textContent = String(pinAttempts);
+      pinErrorEl.textContent = "";
+      pinErrorEl.classList.remove("error");
+      pinInputEl.value = "";
+      pinInputEl.focus();
+    }
+
+    function denyAccess() {
+      console.log("denyAccess()");
+      pinOverlayEl.classList.remove("hidden");
+      appEl.classList.add("hidden");
+      pinAttempsEl.textContent = "0";
+      pinInputEl.disabled = true;
+      pinSubmitBtn.disabled = true;
+      pinErrorEl.textContent = "Too many attempts.";
+      pinErrorEl.classList.add("error");
+      showStatus("Access locked.");
+    }
+
+    function verifyPIN() {
+      const input = pinInputEl.value.trim();
+      if (!input || input.length !== 6 || !/^\d+$/.test(input)) {
+        pinErrorEl.textContent = "Enter 6 digits.";
+        return;
+      }
+
+      const encodedInput = btoa(input);
+      console.log("PIN entered:", input, "encoded:", encodedInput, "expected:", PIN_ENCODED);
+
+      if (encodedInput === PIN_ENCODED) {
+        createNewSession();
+        showStatus("Authenticated. Use Space/K, J/L, N/P, arrows, ←/→.");
+        showApp();
+        return;
+      }
+
+      pinAttempts -= 1;
+      pinAttempsEl.textContent = String(pinAttempts);
+      if (pinAttempts <= 0) {
+        denyAccess();
+      } else {
+        pinErrorEl.textContent = "Wrong PIN.";
+        pinInputEl.value = "";
+        pinInputEl.focus();
+      }
+    }
+
+    function generateSessionId() {
+      return "session_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+    }
+
+    function createNewSession() {
+      const sessionId = generateSessionId();
+      const sessionData = {
+        id: sessionId,
+        timestamp: Date.now(),
+        browser: navigator.userAgent
+      };
+      localStorage.setItem(SESSION_KEY, JSON.stringify(sessionData));
+      console.log("New session created:", sessionId);
+    }
+
+    function getActiveSession() {
+      try {
+        const raw = localStorage.getItem(SESSION_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch (e) {
+        console.warn("Session parse error:", e);
+        return null;
+      }
+    }
+
+    function clearSession() {
+      localStorage.removeItem(SESSION_KEY);
+      console.log("Session cleared");
+    }
+
+    function checkExistingSession() {
+      const session = getActiveSession();
+      if (!session) return false;
+      
+      // Session expires after 30 days (2,592,000,000 milliseconds)
+      const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+      const now = Date.now();
+      const elapsed = now - session.timestamp;
+      
+      if (elapsed > THIRTY_DAYS) {
+        console.log("Session expired (older than 30 days). Clearing.");
+        clearSession();
+        return false;
+      }
+      
+      console.log("Active session found:", session.id, "(" + Math.floor(elapsed / (24 * 60 * 60 * 1000)) + " days old)");
+      return true;
+    }
+
+    function logout() {
+      clearSession();
+      console.log("User logged out");
+      if (audio) audio.pause();
+      pinAttempts = 3;
+      showPINOverlay();
+    }
+
+    function saveVolume(vol) {
+      localStorage.setItem(VOLUME_KEY, String(vol));
+    }
+
+    function getSavedVolume() {
+      try {
+        const saved = localStorage.getItem(VOLUME_KEY);
+        if (!saved) return 0.85;
+        const vol = Number(saved);
+        return isFinite(vol) && vol >= 0 && vol <= 1 ? vol : 0.85;
+      } catch (e) {
+        return 0.85;
+      }
+    }
+
+    function saveCurrentTrack(index) {
+      localStorage.setItem(CURRENT_TRACK_KEY, String(index));
+    }
+
+    function getSavedTrackIndex() {
+      try {
+        const saved = localStorage.getItem(CURRENT_TRACK_KEY);
+        if (!saved) return 0;
+        const index = Number(saved);
+        return isFinite(index) && index >= 0 ? index : 0;
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    function filterAndDisplayTracks(searchTerm) {
+      if (!catalog || !Array.isArray(catalog.tracks)) return;
+
+      const term = searchTerm.toLowerCase().trim();
+      
+      if (term === "") {
+        isSearchActive = false;
+        filteredTracks = catalog.tracks;
+      } else {
+        isSearchActive = true;
+        filteredTracks = catalog.tracks.filter(track => {
+          const name = (track.name || track.filename || "").toLowerCase();
+          return name.includes(term);
+        });
+      }
+
+      buildPlaylist(filteredTracks);
+    }
+
+    function getOriginalIndex(filteredIndex) {
+      if (!isSearchActive) return filteredIndex;
+      const filteredTrack = filteredTracks[filteredIndex];
+      return catalog.tracks.indexOf(filteredTrack);
+    }
+
+    async function readBehaviorFlag() {
+      console.log("readBehaviorFlag()…");
+      try {
+        const res = await fetch(CONTROL_PATH, { cache: "no-cache" });
+        console.log("1.txt status:", res.status);
+        if (!res.ok) {
+          behaviorFlag = "0"; // default
+          showStatus("1.txt missing. Default behavior: no PIN. Load music folder to add tracks.");
+          return;
+        }
+        const text = await res.text();
+        behaviorFlag = text.trim();
+        if (!["0", "1", "2"].includes(behaviorFlag)) {
+          behaviorFlag = "0";
+        }
+        console.log("1.txt content (flag):", JSON.stringify(behaviorFlag));
+      } catch (err) {
+        console.warn("Could not read 1.txt:", err);
+        behaviorFlag = "0";
+        showStatus("1.txt read error. Default behavior: no PIN. Load music folder to add tracks.");
+      }
+    }
+
+    async function handleAuthByFlag() {
+      if (behaviorFlag === "0") {
+        // No PIN
+        showStatus("No PIN (1.txt = 0).");
+        showApp();
+      } else if (behaviorFlag === "1" || behaviorFlag === "2") {
+        // PIN required - check if there's already an active session on this browser
+        if (checkExistingSession()) {
+          showStatus("Authenticated (existing session).");
+          showApp();
+        } else {
+          showPINOverlay();
+        }
+      } else {
+        showStatus("No PIN (fallback).");
+        showApp();
+      }
+    }
+
+    function loadCatalogFromStorage() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        console.log("localStorage raw catalog length:", raw ? raw.length : 0);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch (e) {
+        console.warn("localStorage parse error:", e);
+        return null;
+      }
+    }
+
+    function revokeObjectUrls() {
+      objectUrls.forEach((url) => URL.revokeObjectURL(url));
+      objectUrls.length = 0;
+    }
+
+    function isAudioFile(filename) {
+      return ALLOWED_AUDIO_EXTENSIONS.some((ext) => filename.toLowerCase().endsWith(ext));
+    }
+
+    function createTrackFromFile(file) {
+      const filename = file.webkitRelativePath || file.name;
+      const displayName = file.name.replace(/\.[^/.]+$/, "");
+      const extension = "." + (file.name.split(".").pop() || "").toLowerCase();
+      const url = URL.createObjectURL(file);
+      objectUrls.push(url);
+
+      return {
+        name: displayName,
+        filename,
+        path: filename,
+        url,
+        extension,
+      };
+    }
+
+    function createCatalogFromFiles(fileList) {
+      const files = Array.from(fileList).filter((file) => isAudioFile(file.name));
+      if (files.length === 0) {
+        showStatus("No supported audio files found in selected folder.");
+        return null;
+      }
+
+      files.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
+      revokeObjectUrls();
+      const tracks = files.map(createTrackFromFile);
+      const catalogFromFiles = { tracks };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ tracks: tracks.map((track) => ({ name: track.name, filename: track.filename, extension: track.extension })) }));
+      console.log("Created catalog from selected folder with", tracks.length, "tracks.");
+      return catalogFromFiles;
+    }
+
+    function handleFolderSelection(fileList) {
+      const newCatalog = createCatalogFromFiles(fileList);
+      if (!newCatalog) return;
+      catalog = newCatalog;
+      filteredTracks = catalog.tracks;
+      buildPlaylist(catalog.tracks);
+      currentIndex = 0;
+      loadTrack(currentIndex, false);
+      showStatus("Loaded " + catalog.tracks.length + " tracks from selected folder.");
+    }
+
+    function buildPlaylist(tracks) {
+      console.log("buildPlaylist() tracks:", tracks.length);
+      playlistEl.innerHTML = "";
+      tracks.forEach((track, index) => {
+        const li = document.createElement("li");
+        li.className = "playlist-item";
+        li.dataset.index = String(index);
+        li.tabIndex = 0;
+
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "name";
+        nameSpan.textContent = track.name || track.filename || "Track " + (index + 1);
+
+        const badge = document.createElement("span");
+        badge.className = "badge";
+        const ext = (track.extension || "").toUpperCase().replace(".", "");
+        const dur = track.duration_seconds != null ? formatTime(track.duration_seconds) : "";
+        badge.textContent = ext || dur ? (ext ? ext + " " : "") + (dur ? " " + dur : "") : "";
+
+        li.appendChild(nameSpan);
+        if (badge.textContent.trim()) li.appendChild(badge);
+
+        li.addEventListener("click", () => {
+          const originalIndex = getOriginalIndex(index);
+          loadTrack(originalIndex, true);
+        });
+        li.addEventListener("keydown", (e) => {
+          if (["Enter", " "].includes(e.key)) {
+            e.preventDefault();
+            const originalIndex = getOriginalIndex(index);
+            loadTrack(originalIndex, true);
+          }
+        });
+
+        playlistEl.appendChild(li);
+      });
+    }
+
+    function highlightActiveTrack() {
+      const items = playlistEl.querySelectorAll(".playlist-item");
+      items.forEach((item) => {
+        if (Number(item.dataset.index) === currentIndex) {
+          item.classList.add("active");
+          item.scrollIntoView({ block: "nearest" });
+        } else {
+          item.classList.remove("active");
+        }
+      });
+    }
+
+    function createAudioIfNeeded() {
+      if (audio) return;
+      console.log("createAudioIfNeeded()");
+      audio = new Audio();
+      audio.loop = true;
+      const savedVol = getSavedVolume();
+      audio.volume = savedVol;
+      volumeEl.value = savedVol;
+
+      audio.addEventListener("timeupdate", () => {
+        if (!audio || isSeeking) return;
+        const current = audio.currentTime || 0;
+        const duration = audio.duration || 0;
+        if (duration > 0) {
+          progressEl.max = duration;
+          progressEl.value = current;
+          elapsedEl.textContent = formatTime(current);
+          remainingEl.textContent = "-" + formatTime(Math.max(duration - current, 0));
+        }
+      });
+
+      audio.addEventListener("loadedmetadata", () => {
+        const duration = audio.duration || 0;
+        if (duration > 0) {
+          progressEl.max = duration;
+          remainingEl.textContent = "-" + formatTime(duration);
+          showStatus("Playing: " + (catalog.tracks[currentIndex].name || catalog.tracks[currentIndex].filename));
+        }
+      });
+
+      audio.addEventListener("play", () => (playBtn.textContent = "Pause"));
+      audio.addEventListener("pause", () => (playBtn.textContent = "Play"));
+
+      audio.addEventListener("error", (event) => {
+        const track = catalog.tracks[currentIndex];
+        const trackName = track.name || track.filename || "Unknown track";
+        console.error("Audio error:", event, "Track:", trackName);
+        showStatus("⚠️ Cannot play: " + trackName + " (" + track.extension + "). File missing or unsupported format.");
+      });
+
+      audio.addEventListener("stalled", () => {
+        showStatus("⚠️ Loading stalled. Check file availability.");
+      });
+    }
+
+    function loadTrack(index, autoplay) {
+      if (!catalog || !Array.isArray(catalog.tracks) || catalog.tracks.length === 0) return;
+
+      createAudioIfNeeded();
+
+      currentIndex = ((index % catalog.tracks.length) + catalog.tracks.length) % catalog.tracks.length;
+      const track = catalog.tracks[currentIndex];
+      const filename = track.url || track.filename || track.path || "";
+      console.log("loadTrack index", currentIndex, "file", filename);
+
+      saveCurrentTrack(currentIndex);
+
+      audio.src = filename;
+      trackTitleEl.textContent = track.name || filename || "Unnamed track";
+
+      const ext = (track.extension || "").toUpperCase().replace(".", "");
+      const dur = track.duration_seconds != null ? formatTime(track.duration_seconds) : "";
+      trackMetaEl.textContent = [ext || null, dur || null, "Looping"].filter(Boolean).join("  •  ");
+
+      progressEl.value = 0;
+      elapsedEl.textContent = "0:00";
+      remainingEl.textContent = "-0:00";
+
+      highlightActiveTrack();
+
+      if (autoplay) {
+        audio.play().catch((err) => {
+          console.warn("Autoplay blocked:", err);
+          showStatus("🔇 Click Play to start. Browser blocked autoplay.");
+        });
+      }
+    }
+
+    function togglePlayPause() {
+      if (!audio) {
+        loadTrack(currentIndex, true);
+        return;
+      }
+      if (audio.paused) {
+        audio.play().catch(() => {});
+      } else {
+        audio.pause();
+      }
+    }
+
+    function nextTrack() {
+      if (!catalog || !catalog.tracks.length) return;
+      loadTrack(currentIndex + 1, true);
+    }
+
+    function prevTrack() {
+      if (!catalog || !catalog.tracks.length) return;
+      if (audio && audio.currentTime > 3) {
+        audio.currentTime = 0;
+      } else {
+        loadTrack(currentIndex - 1, true);
+      }
+    }
+
+    function seekBy(delta) {
+      if (!audio) return;
+      const target = Math.max(0, Math.min((audio.currentTime || 0) + delta, audio.duration || Infinity));
+      audio.currentTime = target;
+    }
+
+    function adjustVolume(delta) {
+      const vol = Math.max(0, Math.min((Number(volumeEl.value) || 0) + delta, 1));
+      volumeEl.value = vol;
+      if (audio) audio.volume = vol;
+    }
+
+    function onProgressInput() {
+      if (!audio) return;
+      isSeeking = true;
+      const target = Number(progressEl.value) || 0;
+      elapsedEl.textContent = formatTime(target);
+      const duration = audio.duration || 0;
+      remainingEl.textContent = "-" + formatTime(Math.max(duration - target, 0));
+    }
+
+    function onProgressChange() {
+      if (!audio) {
+        isSeeking = false;
+        return;
+      }
+      const duration = audio.duration || 0;
+      audio.currentTime = Math.max(0, Math.min(Number(progressEl.value) || 0, duration));
+      isSeeking = false;
+    }
+
+    function onVolumeChange() {
+      if (!audio) return;
+      const vol = Math.max(0, Math.min(Number(volumeEl.value) || 0, 1));
+      audio.volume = vol;
+      saveVolume(vol);
+    }
+
+    function shouldIgnoreHotkeys(target) {
+      if (!target) return false;
+      const tag = target.tagName;
+      return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable;
+    }
+
+    function handleHotkeys(e) {
+      if (shouldIgnoreHotkeys(document.activeElement)) return;
+
+      switch (e.key.toLowerCase()) {
+        case " ":
+        case "k":
+          e.preventDefault();
+          togglePlayPause();
+          break;
+        case "j":
+        case "arrowleft":
+          e.preventDefault();
+          seekBy(-5);
+          break;
+        case "l":
+        case "arrowright":
+          e.preventDefault();
+          seekBy(5);
+          break;
+        case "n":
+          e.preventDefault();
+          nextTrack();
+          break;
+        case "p":
+          e.preventDefault();
+          prevTrack();
+          break;
+        case "arrowup":
+          e.preventDefault();
+          adjustVolume(0.05);
+          break;
+        case "arrowdown":
+          e.preventDefault();
+          adjustVolume(-0.05);
+          break;
+      }
+    }
+
+    async function init() {
+      console.log("init() starting");
+      await readBehaviorFlag();
+      await handleAuthByFlag();
+
+      catalog = loadCatalogFromStorage();
+      if (!catalog || !Array.isArray(catalog.tracks) || catalog.tracks.length === 0) {
+        trackTitleEl.textContent = "No songs";
+        trackMetaEl.textContent = "Catalog empty. Click Load music folder to select audio files.";
+        showStatus("No tracks loaded. Click Load music folder.");
+        return;
+      }
+      filteredTracks = catalog.tracks;
+      buildPlaylist(catalog.tracks);
+      const savedIndex = getSavedTrackIndex();
+      loadTrack(savedIndex, false);
+      showStatus("Ready. Use Space/K, J/L, N/P, arrows, ←/→, or search.");
+    }
+
+    pinSubmitBtn.addEventListener("click", verifyPIN);
+    pinInputEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") verifyPIN();
+    });
+
+    playBtn.addEventListener("click", togglePlayPause);
+    prevBtn.addEventListener("click", prevTrack);
+    nextBtn.addEventListener("click", nextTrack);
+    logoutBtn.addEventListener("click", logout);
+
+    const loadFolderBtn = document.getElementById("load-folder-btn");
+    const folderInputEl = document.getElementById("folder-input");
+
+    loadFolderBtn.addEventListener("click", () => folderInputEl.click());
+    folderInputEl.addEventListener("change", () => {
+      if (!folderInputEl.files || folderInputEl.files.length === 0) return;
+      handleFolderSelection(folderInputEl.files);
+    });
+
+    progressEl.addEventListener("input", onProgressInput);
+    progressEl.addEventListener("change", onProgressChange);
+    volumeEl.addEventListener("input", onVolumeChange);
+    searchInputEl.addEventListener("input", (e) => {
+      filterAndDisplayTracks(e.target.value);
+    });
+
+    document.addEventListener("keydown", handleHotkeys);
+
+    window.addEventListener("DOMContentLoaded", () => {
+      console.log("DOMContentLoaded fired");
+      init();
+    });
+  </script>
+</body>
+</html>
