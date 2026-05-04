@@ -271,6 +271,7 @@
       <div class="panel-alt right-column">
         <div class="library-header">Library</div>
         <button id="load-folder-btn" class="btn" style="width: 100%; margin-bottom: 12px;">Load music folder</button>
+        <button id="restore-playlist-btn" class="btn" style="width: 100%; margin-bottom: 12px;">Restore saved playlist</button>
         <input id="folder-input" type="file" webkitdirectory directory multiple class="hidden" />
         <input id="search-input" type="text" placeholder="Search tracks..." style="width: 100%; padding: 8px; margin-bottom: 12px; background: var(--panel-bg); color: var(--text-main); border: 1px solid var(--border); border-radius: 6px; font-size: 13px;" />
         <ul id="playlist" class="playlist"></ul>
@@ -572,6 +573,36 @@
       }
     }
 
+    function loadCatalogFromJson() {
+      return fetch("music.json", { cache: "no-cache" })
+        .then((res) => {
+          if (!res.ok) return null;
+          return res.json();
+        })
+        .then((data) => {
+          if (!data || !Array.isArray(data.tracks)) return null;
+          const tracks = data.tracks.map((track) => {
+            const filename = track.filename || track.path || "";
+            const returnedUrl = track.url || filename;
+            const extension = track.extension || "." + (filename.split(".").pop() || "").toLowerCase();
+            return {
+              name: track.name || filename.replace(/\.[^/.]+$/, "") || "Track",
+              filename,
+              path: filename,
+              url: returnedUrl,
+              extension,
+            };
+          });
+          const catalog = { tracks };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify({ tracks: serializeCatalogForStorage(tracks) }));
+          return catalog;
+        })
+        .catch((err) => {
+          console.warn("Could not load music.json:", err);
+          return null;
+        });
+    }
+
     function revokeObjectUrls() {
       objectUrls.forEach((url) => URL.revokeObjectURL(url));
       objectUrls.length = 0;
@@ -581,9 +612,13 @@
       return ALLOWED_AUDIO_EXTENSIONS.some((ext) => filename.toLowerCase().endsWith(ext));
     }
 
-    function createTrackFromFile(file) {
+    function normalizeKey(path) {
+      return String(path || "").replace(/\\/g, "/").toLowerCase();
+    }
+
+    function createTrackFromFile(file, nameOverride) {
       const filename = file.webkitRelativePath || file.name;
-      const displayName = file.name.replace(/\.[^/.]+$/, "");
+      const displayName = nameOverride || file.name.replace(/\.[^/.]+$/, "");
       const extension = "." + (file.name.split(".").pop() || "").toLowerCase();
       const url = URL.createObjectURL(file);
       objectUrls.push(url);
@@ -597,6 +632,15 @@
       };
     }
 
+    function serializeCatalogForStorage(tracks) {
+      return tracks.map((track) => ({
+        name: track.name,
+        filename: track.filename,
+        path: track.path,
+        extension: track.extension,
+      }));
+    }
+
     function createCatalogFromFiles(fileList) {
       const files = Array.from(fileList).filter((file) => isAudioFile(file.name));
       if (files.length === 0) {
@@ -606,15 +650,51 @@
 
       files.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
       revokeObjectUrls();
-      const tracks = files.map(createTrackFromFile);
+      const tracks = files.map((file) => createTrackFromFile(file));
       const catalogFromFiles = { tracks };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ tracks: tracks.map((track) => ({ name: track.name, filename: track.filename, extension: track.extension })) }));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ tracks: serializeCatalogForStorage(tracks) }));
       console.log("Created catalog from selected folder with", tracks.length, "tracks.");
       return catalogFromFiles;
     }
 
+    function createCatalogFromSavedPlaylistAndFiles(fileList, storedCatalog) {
+      const files = Array.from(fileList).filter((file) => isAudioFile(file.name));
+      if (files.length === 0) {
+        showStatus("No supported audio files found in selected folder.");
+        return null;
+      }
+
+      revokeObjectUrls();
+      const fileMap = new Map();
+      files.forEach((file) => {
+        fileMap.set(normalizeKey(file.webkitRelativePath || file.name), file);
+        fileMap.set(normalizeKey(file.name), file);
+      });
+
+      const tracks = storedCatalog.tracks
+        .map((track) => {
+          const key = normalizeKey(track.path || track.filename || track.name);
+          const file = fileMap.get(key) || fileMap.get(normalizeKey(track.filename));
+          if (!file) return null;
+          return createTrackFromFile(file, track.name);
+        })
+        .filter(Boolean);
+
+      if (tracks.length === 0) {
+        return createCatalogFromFiles(fileList);
+      }
+
+      const catalogFromFiles = { tracks };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ tracks: serializeCatalogForStorage(tracks) }));
+      console.log("Restored catalog from saved playlist and selected folder with", tracks.length, "tracks.");
+      return catalogFromFiles;
+    }
+
     function handleFolderSelection(fileList) {
-      const newCatalog = createCatalogFromFiles(fileList);
+      const storedCatalog = loadCatalogFromStorage();
+      const newCatalog = storedCatalog && Array.isArray(storedCatalog.tracks) && storedCatalog.tracks.length > 0
+        ? createCatalogFromSavedPlaylistAndFiles(fileList, storedCatalog)
+        : createCatalogFromFiles(fileList);
       if (!newCatalog) return;
       catalog = newCatalog;
       filteredTracks = catalog.tracks;
@@ -622,6 +702,33 @@
       currentIndex = 0;
       loadTrack(currentIndex, false);
       showStatus("Loaded " + catalog.tracks.length + " tracks from selected folder.");
+    }
+
+    async function restoreSavedPlaylist() {
+      const stored = loadCatalogFromStorage();
+      if (stored && Array.isArray(stored.tracks) && stored.tracks.length > 0) {
+        catalog = stored;
+        filteredTracks = catalog.tracks;
+        buildPlaylist(catalog.tracks);
+        currentIndex = getSavedTrackIndex();
+        loadTrack(currentIndex, false);
+        showStatus("Restored saved playlist.");
+        return true;
+      }
+
+      const jsonCatalog = await loadCatalogFromJson();
+      if (jsonCatalog && Array.isArray(jsonCatalog.tracks) && jsonCatalog.tracks.length > 0) {
+        catalog = jsonCatalog;
+        filteredTracks = catalog.tracks;
+        buildPlaylist(catalog.tracks);
+        currentIndex = 0;
+        loadTrack(currentIndex, false);
+        showStatus("Restored playlist from music.json.");
+        return true;
+      }
+
+      showStatus("No saved playlist found. Load a folder or add music.json metadata.");
+      return false;
     }
 
     function buildPlaylist(tracks) {
@@ -865,11 +972,15 @@
       await readBehaviorFlag();
       await handleAuthByFlag();
 
-      catalog = loadCatalogFromStorage();
+      catalog = await loadCatalogFromJson();
+      if (!catalog || !Array.isArray(catalog.tracks) || catalog.tracks.length === 0) {
+        catalog = loadCatalogFromStorage();
+      }
+
       if (!catalog || !Array.isArray(catalog.tracks) || catalog.tracks.length === 0) {
         trackTitleEl.textContent = "No songs";
-        trackMetaEl.textContent = "Catalog empty. Click Load music folder to select audio files.";
-        showStatus("No tracks loaded. Click Load music folder.");
+        trackMetaEl.textContent = "Catalog empty. Load a folder or restore a saved playlist.";
+        showStatus("No tracks loaded. Load a folder or restore a saved playlist.");
         return;
       }
       filteredTracks = catalog.tracks;
@@ -890,9 +1001,11 @@
     logoutBtn.addEventListener("click", logout);
 
     const loadFolderBtn = document.getElementById("load-folder-btn");
+    const restorePlaylistBtn = document.getElementById("restore-playlist-btn");
     const folderInputEl = document.getElementById("folder-input");
 
     loadFolderBtn.addEventListener("click", () => folderInputEl.click());
+    restorePlaylistBtn.addEventListener("click", restoreSavedPlaylist);
     folderInputEl.addEventListener("change", () => {
       if (!folderInputEl.files || folderInputEl.files.length === 0) return;
       handleFolderSelection(folderInputEl.files);
