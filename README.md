@@ -17,3 +17,8 @@ I'm currently making Scratch projects and will make some python, maybe. I also p
 By [Vitr013 on Scratch](https://scratch.mit.edu/users/Vitr013/):
  ["Man your like the next grit patch!!!"
    "*gridfpatch"](https://scratch.mit.edu/projects/1297073703/#comments-542135581)
+
+
+**Contact Me**
+
+Hi, you can email me [here](https://sullydux.github.io/sullydux/email.html), I might take a day to respond
