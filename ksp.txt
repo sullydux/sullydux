@@ -1,0 +1,1 @@
+my KSP mods are base game, Breaking Ground, ClickThroughBlocker, Harmony, ToolbarControl, Scale_Redist.dll, B9PartSwitch, CommunityResourcePack, KerbalEngineer, Kerbaltek, KSPCommunityFixes, MechJeb2, ModuleManager.4.2.3.dll, NearFuturePropulsion, SquadExpansion, SullyEngineer (your custom stuff), TextureReplacer, TweakScale.; no others.
