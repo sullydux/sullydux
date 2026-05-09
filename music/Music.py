@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Run in Terminal with:
-python3 ~/Desktop/Media/Music/Music.py
+python3 ~/Desktop/Coding/Github/sullydux/music/Music.py
 """
 
 import json
