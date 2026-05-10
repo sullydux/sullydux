@@ -1,6 +1,6 @@
 {
   "music_folder": "/Users/sullydux/Desktop/Coding/Github/sullydux/Music",
-  "track_count": 16,
+  "track_count": 17,
   "tracks": [
     {
       "name": "Best Lord of the Rings Music (Top 5) (1)",
@@ -100,6 +100,15 @@
       "size_bytes": 3481595,
       "modified_timestamp": 1776375847,
       "duration_seconds": 215.19
+    },
+    {
+      "name": "The Breaking of the Fellowship (feat.  In Dreams )",
+      "filename": "The Breaking of the Fellowship (feat.  In Dreams ).m4a",
+      "path": "/Users/sullydux/Desktop/Coding/Github/sullydux/Music/The Breaking of the Fellowship (feat.  In Dreams ).m4a",
+      "extension": ".m4a",
+      "size_bytes": 7130593,
+      "modified_timestamp": 1778423637,
+      "duration_seconds": 440.818
     },
     {
       "name": "The Lord of the Rings Music - The Fellowship",
