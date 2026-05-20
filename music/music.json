@@ -1,6 +1,6 @@
 {
   "music_folder": "/Users/sullydux/Desktop/Coding/Github/sullydux/Music",
-  "track_count": 17,
+  "track_count": 19,
   "tracks": [
     {
       "name": "Best Lord of the Rings Music (Top 5) (1)",
@@ -10,6 +10,15 @@
       "size_bytes": 7819310,
       "modified_timestamp": 1777825347,
       "duration_seconds": 483.44
+    },
+    {
+      "name": "Best of Game of Thrones Soundtrack Seasons 1-6",
+      "filename": "Best of Game of Thrones Soundtrack Seasons 1-6.m4a",
+      "path": "/Users/sullydux/Desktop/Coding/Github/sullydux/Music/Best of Game of Thrones Soundtrack Seasons 1-6.m4a",
+      "extension": ".m4a",
+      "size_bytes": 33955221,
+      "modified_timestamp": 1779317232,
+      "duration_seconds": 2099.526
     },
     {
       "name": "Concerning Hobbits",
@@ -46,6 +55,15 @@
       "size_bytes": 4130756,
       "modified_timestamp": 1761076955,
       "duration_seconds": 89.783
+    },
+    {
+      "name": "Game Of Thrones Soundtrack   Best Songs ONLY   Vol. II",
+      "filename": "Game Of Thrones Soundtrack   Best Songs ONLY   Vol. II.m4a",
+      "path": "/Users/sullydux/Desktop/Coding/Github/sullydux/Music/Game Of Thrones Soundtrack   Best Songs ONLY   Vol. II.m4a",
+      "extension": ".m4a",
+      "size_bytes": 64742072,
+      "modified_timestamp": 1779317248,
+      "duration_seconds": 4003.19
     },
     {
       "name": "Hollow Knight",
