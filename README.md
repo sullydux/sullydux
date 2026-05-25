@@ -14,7 +14,7 @@ I'm currently making Scratch projects and will make some python, maybe. I also p
 
 ---
 
-**Acknowledgements**
+**Praise**
 
 By [Vitr013 on Scratch](https://scratch.mit.edu/users/Vitr013/):
  ["Man your like the next grit patch!!!"
