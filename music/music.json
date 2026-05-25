@@ -1,16 +1,7 @@
 {
   "music_folder": "/Users/sullydux/Desktop/Coding/Github/sullydux/Music",
-  "track_count": 19,
+  "track_count": 20,
   "tracks": [
-    {
-      "name": "Best Lord of the Rings Music (Top 5) (1)",
-      "filename": "Best Lord of the Rings Music (Top 5) (1).m4a",
-      "path": "/Users/sullydux/Desktop/Coding/Github/sullydux/Music/Best Lord of the Rings Music (Top 5) (1).m4a",
-      "extension": ".m4a",
-      "size_bytes": 7819310,
-      "modified_timestamp": 1777825347,
-      "duration_seconds": 483.44
-    },
     {
       "name": "Best of Game of Thrones Soundtrack Seasons 1-6",
       "filename": "Best of Game of Thrones Soundtrack Seasons 1-6.m4a",
@@ -102,6 +93,15 @@
       "duration_seconds": 6205.347
     },
     {
+      "name": "Official Opening Credits Game of Thrones (HBO)",
+      "filename": "Official Opening Credits Game of Thrones (HBO).m4a",
+      "path": "/Users/sullydux/Desktop/Coding/Github/sullydux/Music/Official Opening Credits Game of Thrones (HBO).m4a",
+      "extension": ".m4a",
+      "size_bytes": 1645667,
+      "modified_timestamp": 1779628160,
+      "duration_seconds": 101.704
+    },
+    {
       "name": "Rivendell 4K Ambience   Lord of the Rings Music, Peaceful Night Sleep, Human Made, No Mid-roll Ads",
       "filename": "Rivendell 4K Ambience   Lord of the Rings Music, Peaceful Night Sleep, Human Made, No Mid-roll Ads.m4a",
       "path": "/Users/sullydux/Desktop/Coding/Github/sullydux/Music/Rivendell 4K Ambience   Lord of the Rings Music, Peaceful Night Sleep, Human Made, No Mid-roll Ads.m4a",
@@ -127,6 +127,15 @@
       "size_bytes": 7130593,
       "modified_timestamp": 1778423637,
       "duration_seconds": 440.818
+    },
+    {
+      "name": "The Lord of the Rings - Best of Soundtrack (Epic Version)",
+      "filename": "The Lord of the Rings - Best of Soundtrack (Epic Version).m4a",
+      "path": "/Users/sullydux/Desktop/Coding/Github/sullydux/Music/The Lord of the Rings - Best of Soundtrack (Epic Version).m4a",
+      "extension": ".m4a",
+      "size_bytes": 62763373,
+      "modified_timestamp": 1779630698,
+      "duration_seconds": 3880.844
     },
     {
       "name": "The Lord of the Rings Music - The Fellowship",
