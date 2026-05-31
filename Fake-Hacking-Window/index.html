@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SYSTEM COMPROMISED</title>
+  <style>
+  :root {
+    --bg: #000;
+    --green: #00ff66;
+    --dim: rgba(0, 255, 102, 0.6);
+    --red: #ff4d4d;
+    --yellow: #ffd700;
+    --font: "Courier New", "Source Code Pro", monospace;
+  }
+
+  html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--green);
+    font-family: var(--font);
+    font-size: 14px;
+    letter-spacing: 0.3px;
+  }
+
+  .scanlines {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 255, 102, 0.05) 0px,
+      rgba(0, 255, 102, 0.05) 2px,
+      transparent 2px,
+      transparent 4px
+    );
+    mix-blend-mode: screen;
+    animation: flicker 0.1s infinite alternate;
+  }
+
+  @keyframes flicker {
+    from { opacity: 0.85; }
+    to   { opacity: 1; }
+  }
+
+  .wrap {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .banner {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px var(--green);
+  }
+
+  .alert-card {
+    background: rgba(0, 0, 0, 0.85);
+    padding: 10px;
+    border: 1px solid rgba(255, 77, 77, 0.55);
+    border-radius: 5px;
+    margin-top: 2px;
+    box-shadow: 0 0 8px rgba(255, 77, 77, 0.25);
+  }
+
+  .alert-yellow {
+    border-color: rgba(255, 215, 0, 0.5);
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.25);
+  }
+
+  .status {
+    color: var(--dim);
+    margin-bottom: 8px;
+    font-size: 17px;
+  }
+
+  .scanner {
+    margin-top: 10px;
+    height: 28px;
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(0, 255, 102, 0.5);
+    padding: 3px;
+    box-shadow: 0 0 7px rgba(0, 255, 102, 0.2);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .scan-text {
+    display: inline-block;
+    color: var(--yellow);
+    font-size: 16px;
+    animation: scroll-scan 9s linear infinite;
+  }
+
+  @keyframes scroll-scan {
+    0%   { transform: translateX(100%); }
+    100% { transform: translateX(-200%); }
+  }
+
+  .terminal {
+    flex: 1;
+    max-height: 53vh;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid rgba(0, 255, 102, 0.4);
+    background: rgba(0, 0, 0, 0.85);
+    box-shadow: 0 0 9px rgba(0, 255, 102, 0.25);
+    line-height: 1.55;
+    font-size: 14px;
+    margin-top: 10px;
+    white-space: pre-wrap;
+    text-shadow: 0 0 6px rgba(0, 255, 102, 0.35);
+  }
+
+  .cmd-line {
+    display: flex;
+    align-items: center;
+    margin-top: 6px;
+    color: var(--green);
+    font-size: 15px;
+    padding: 3px 0 0 4px;
+  }
+
+  .prompt {
+    margin-right: 8px;
+  }
+
+  .typed-text {
+    white-space: pre-wrap;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 10px;
+    height: 16px;
+    background: var(--green);
+    margin-left: 4px;
+    animation: blink 0.8s step-end infinite;
+    vertical-align: middle;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  .progress {
+    margin-top: 10px;
+    width: min(480px, 100%);
+    border: 1px solid var(--green);
+    padding: 3px;
+    box-shadow: 0 0 10px rgba(0, 255, 102, 0.25);
+  }
+
+  .bar {
+    height: 18px;
+    width: 0%;
+    background: linear-gradient(
+      90deg,
+      var(--green) 0%,
+      #b6ff00 50%,
+      var(--green) 100%
+    );
+    animation: load 5.5s linear infinite;
+  }
+
+  @keyframes load {
+    0%   { width: 2%; }
+    35%  { width: 42%; }
+    65%  { width: 78%; }
+    100% { width: 98%; }
+  }
+
+  .bar-text {
+    margin-top: 6px;
+    color: var(--dim);
+    font-size: 12px;
+  }
+
+  .warning {
+    margin-top: 12px;
+    color: var(--red);
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(255, 77, 77, 0.5);
+  }
+
+  .fake-code {
+    margin-top: 12px;
+    color: rgba(0, 255, 102, 0.7);
+    font-size: 12px;
+  }
+
+  .prank-hint {
+    margin-top: 8px;
+    font-size: 11px;
+    color: rgba(255, 77, 77, 0.6);
+    text-align: center;
+  }
+
+  .prank-btn {
+    display: inline-block;
+    padding: 4px 8px;
+    background: rgba(50, 0, 0, 0.5);
+    color: rgba(255, 77, 77, 0.8);
+    border: 1px solid rgba(255, 77, 77, 0.5);
+    border-radius: 4px;
+    font-family: var(--font);
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 0 4px rgba(255, 77, 77, 0.3);
+    transition: all 0.2s ease;
+  }
+
+  .prank-btn:hover {
+    background: rgba(70, 0, 0, 0.7);
+    box-shadow: 0 0 6px rgba(255, 77, 77, 0.5);
+  }
+</style>
+</head>
+<body tabindex="0"> <!-- so it can receive focus + key events -->
+  <div class="wrap">
+    <div class="banner">SYSTEM COMPROMISED</div>
+
+    <div class="alert-card">
+      <strong style="color:var(--red)">CRITICAL SECURITY BREACH</strong>
+      <br>Remote root shell active from IP: <span style="color:var(--yellow)">185.143.22.194</span>
+      <br>Last login: <span style="color:var(--yellow)">Mon Apr 29 11:52:03 2026</span>
+    </div>
+
+    <div class="alert-card alert-yellow">
+      <strong style="color:var(--yellow)">DECRYPTING ENCRYPTION KEYS</strong>
+      <br>Master partition keys partially recovered.
+      <br>Backup safeties disabled. No rollback path.
+    </div>
+
+    <div class="status">STATUS: SYSTEM INsecure</div>
+
+    <div class="scanner">
+      <div class="scan-text">
+        SCANNING: C:\ • /home • /root • /System/Library • /tmp • Keychain
+      </div>
+    </div>
+
+    <div class="terminal" id="terminal"></div>
+
+    <div class="cmd-line">
+      <span class="prompt">root@terminal:~# </span>
+      <span class="typed-text" id="typed"></span>
+      <span class="cursor"></span>
+    </div>
+
+    <div class="progress">
+      <div class="bar"></div>
+    </div>
+    <div class="bar-text">DECRYPTION STATUS: IN PROGRESS — 63% UNLOCKED</div>
+
+    <div class="fake-code" id="fake-code"></div>
+
+    <div class="warning">
+      WARNING: ALL DATA IS NOW EXPOSED TO REMOTE HOST
+      <br>WARNING: ADMINISTRATOR PRIVILEGES REVOKED
+    </div>
+
+    <div class="prank-hint" id="prank-area" style="opacity:0; transition:opacity 1.5s;">
+      <button class="prank-btn" id="prank-btn">*</button>
+      Nothing is actually happening. This is just HTML.
+    </div>
+
+    <div class="alert-card" style="margin-top:16px;font-size:13px;">
+      <strong>NOTE:</strong> This page is a harmless visual prank. No scripts are running on your device.
+    </div>
+  </div>
+
+  <div class="scanlines"></div>
+
+  <script>
+    function goFullscreen() {
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) { /* Safari / Chrome */
+        elem.webkitRequestFullscreen();
+      } else if (elem.mozRequestFullScreen) { /* Firefox */
+        elem.mozRequestFullScreen();
+      } else if (elem.msRequestFullscreen) { /* IE/Edge */
+        elem.msRequestFullscreen();
+      }
+    }
+
+    // when the page first gets a key press or click, go fullscreen
+    function onFirstInteraction() {
+      goFullscreen();
+      // remove listeners so it only runs once
+      document.removeEventListener("click", onFirstInteraction);
+      document.removeEventListener("keydown", onFirstInteraction);
+    }
+
+    // add click and key listeners (works in Chrome/Chromium + Firefox)
+    document.addEventListener("click", onFirstInteraction);
+    document.addEventListener("keydown", onFirstInteraction);
+
+    // auto‑focus so the body can receive key events immediately
+    document.body.focus();
+
+    const lines = [
+      "[INFO] 0x5A: Establishing secure tunnel to remote host...",
+      "[INFO] 0x0B: Bypassing firewall (IPv6 encryption not supported)...",
+      "[INFO] 0x2C: Reading user session tokens...",
+      "[INFO] 0x5E: Accessing encrypted vault partition...",
+      "[ALERT] 0xFA: Master key detected. Initiating decryption routine...",
+      "[ALERT] 0x7D: System integrity check failed. 63 anomalies detected.",
+      "[WARN] 0xC1: Recovery partitions locked. Manual override disabled.",
+      "[FAIL] 0x99: Local admin credentials overwritten. User access revoked.",
+      "[ALERT] 0x00: Remote shell opened. All data now accessible...",
+      "[ALERT] 0x11: Backup sync disabled. No rollback possible.",
+      "[ALERT] 0x22: User home directory exposed. Downloading registry snapshots...",
+      "[ALERT] 0x33: Cloud cache index found. Syncing all private keys.",
+      "[ALERT] 0x44: Local firewall rules flushed. Incoming/outgoing traffic rerouted.",
+      "[ALERT] 0x55: System logging disabled. Events no longer recorded.",
+      "[ALERT] 0x66: Remote access maintained until manual shutdown or reboot.",
+      "[ALERT] 0x77: System integrity permanently compromised. No recovery path.",
+      "[ALERT] 0x88: Encrypted credentials decrypted. Wallets and vaults exposed.",
+      "[ALERT] 0x99: System will now remain unlocked until physical power loss.",
+      "[ALERT] 0x00: Final trace complete. Connection secured. Logging off..."
+    ];
+
+    const codeSnippets = [
+      "for i in range(len(secret_keys)):\n  print(f\"[ Decrypting key {i:02} ]\")",
+      "while True:\n  if sniff_packets() and validate_hash():\n    send_payload(remote_ip)",
+      "import sys, os\nos.system('rm -rf /home/* && chmod 777 /root')",
+      "connect('ssh', user='root', host='localhost', key=0xABCDEF0123456789')",
+      "# Payload installed.\n# System compromised.\n# Reboot required."
+    ];
+
+    const terminal = document.getElementById("terminal");
+    const typed = document.getElementById("typed");
+    const fakeCode = document.getElementById("fake-code");
+    const prankArea = document.getElementById("prank-area");
+    const prankBtn = document.getElementById("prank-btn");
+
+    let lineIndex = 0;
+    let charIndex = 0;
+    let codeLineIndex = 0;
+
+    function typeLine() {
+      if (lineIndex < lines.length) {
+        const line = lines[lineIndex];
+
+        if (charIndex < line.length) {
+          typed.textContent = line.slice(0, charIndex + 1);
+          charIndex++;
+          setTimeout(typeLine, 30);
+        } else {
+          terminal.textContent += line + "\n";
+          lineIndex++;
+          charIndex = 0;
+          typed.textContent = "";
+
+          if (lineIndex % 4 === 0 && codeLineIndex < codeSnippets.length) {
+            fakeCode.textContent += "\n" + codeSnippets[codeLineIndex] + "\n";
+            codeLineIndex++;
+          }
+
+          setTimeout(typeLine, 400);
+        }
+      } else {
+        typed.textContent = "sudo shutdown --no-reboot";
+        setTimeout(() => {
+          prankArea.style.opacity = 1;
+          prankBtn.onclick = () => {
+            alert("Relax. This was just a fake hacker screen. It only changes what you see in the browser. Hit escape to exit fullscreen.");
+          };
+        }, 800);
+      }
+    }
+
+    setTimeout(typeLine, 800);
+  </script>
+</body>
+</html>
