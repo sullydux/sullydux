@@ -1,6 +1,6 @@
-I'm currently making Scratch projects and will make some python, maybe. I also play Kerbal Space Program and will post any mods I make here. Also, what website design is better for Cursed Isle: [on Github](https://sullydux.github.io/Curse/) or on [Google Sites](https://sites.google.com/view/cursed-isle)?
+I'm currently making Scratch and Godot projects and will make some python, maybe. I also play Kerbal Space Program and will post any mods I make here.
 
-I'm attempting to make my first Godot Game: Slime Mob
+I'm attempting to make my first Godot game: Slime Attack
 
 ---
 
@@ -13,6 +13,8 @@ I'm attempting to make my first Godot Game: Slime Mob
 [Python file downloads- encrypted with pin](https://sullydux.github.io/sullydux/PY/)
 
 [My friends ASCII generator](https://sullydux.github.io/sullydux/ASCII-studio.html)
+
+<iframe frameborder="0" src="https://itch.io/embed/4584222?linkback=true&amp;border_width=0" width="550" height="165"><a href="https://sullydux.itch.io/curse">Forsaken Legends: Cursed Isle by Sullydux</a></iframe>
 
 ---
 

@@ -55,7 +55,8 @@
 
     body {
       margin: 0;
-      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
       font-family: ui-rounded, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
         "Apple Color Emoji", "Segoe UI Emoji";
       color: var(--text);
@@ -118,8 +119,11 @@
     main {
       width: min(1100px, calc(100% - 2rem));
       margin: 0 auto;
-      padding: 0 0 3rem;
+      padding: 0;
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
     }
 
     .panel {
@@ -128,12 +132,20 @@
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow);
       padding: 1.25rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
     }
 
     .card-list {
       display: grid;
       gap: 1.05rem;
       font-family: Roboto;
+      overflow-y: auto;
+      overflow-x: hidden;
+      flex: 1;
+      min-height: 0;
     }
 
     .copy-card {
