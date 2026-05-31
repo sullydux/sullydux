@@ -14,8 +14,6 @@ I'm attempting to make my first Godot game: Slime Attack
 
 [My friends ASCII generator](https://sullydux.github.io/sullydux/ASCII-studio.html)
 
-<iframe frameborder="0" src="https://itch.io/embed/4584222?linkback=true&amp;border_width=0" width="550" height="165"><a href="https://sullydux.itch.io/curse">Forsaken Legends: Cursed Isle by Sullydux</a></iframe>
-
 ---
 
 **Praise**
