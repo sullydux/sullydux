@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sullydux.github.io/Curse/sitemap.xml
