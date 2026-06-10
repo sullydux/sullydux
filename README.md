@@ -1,6 +1,6 @@
 I'm currently making Scratch and Godot projects and will make some python, maybe. I also play Kerbal Space Program and will post any mods I make here.
 
-I'm attempting to make my first Godot game: Slime Attack
+I'm attempting to make my first Godot game which is a platformer for web, mac, and windows.
 
 ---
 
