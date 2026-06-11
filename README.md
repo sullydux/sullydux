@@ -10,8 +10,6 @@ I'm attempting to make my first Godot game which is a platformer for web, mac, a
 
 [Scratch](https://scratch.mit.edu/users/sullydux/)
 
-[Python file downloads- encrypted with pin](https://sullydux.github.io/sullydux/PY/)
-
 [My friends ASCII generator](https://sullydux.github.io/sullydux/ASCII-studio.html)
 
 ---
