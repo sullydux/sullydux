@@ -325,6 +325,7 @@
       <div class="card">
         <div class="card-label">CPU <span id="cpu-cores-label"></span></div>
         <div class="card-value" id="cpu-value">—</div>
+        <div class="card-sub" id="cpu-sub">—</div>
         <div class="bar-track"><div class="bar-fill" id="cpu-bar"></div></div>
         <div class="cores-row" id="cpu-cores"></div>
       </div>
@@ -332,12 +333,14 @@
         <div class="card-label">Memory</div>
         <div class="card-value" id="ram-value">—</div>
         <div class="card-sub" id="ram-sub">—</div>
+        <div class="card-sub" id="ram-swap-sub" style="margin-top:2px;">—</div>
         <div class="bar-track"><div class="bar-fill" id="ram-bar"></div></div>
       </div>
       <div class="card">
         <div class="card-label">Disk</div>
         <div class="card-value" id="disk-value">—</div>
         <div class="card-sub" id="disk-sub">—</div>
+        <div class="card-sub" id="disk-io-sub" style="margin-top:2px;">—</div>
         <div class="bar-track"><div class="bar-fill" id="disk-bar"></div></div>
       </div>
       <div class="card" id="gpu-card">
@@ -347,9 +350,10 @@
         <div class="bar-track"><div class="bar-fill" id="gpu-bar"></div></div>
       </div>
       <div class="card">
-        <div class="card-label">Network (since launch)</div>
+        <div class="card-label">Network</div>
         <div class="card-value" id="net-value" style="font-size:20px;">—</div>
         <div class="card-sub" id="net-sub">—</div>
+        <div class="card-sub" id="net-rate-sub" style="margin-top:2px;">—</div>
       </div>
       <div class="card" id="battery-card" style="display:none;">
         <div class="card-label">Battery</div>
@@ -357,13 +361,27 @@
         <div class="card-sub" id="batt-sub">—</div>
         <div class="bar-track"><div class="bar-fill" id="batt-bar"></div></div>
       </div>
+      <div class="card">
+        <div class="card-label">System</div>
+        <div class="card-value" id="sys-value" style="font-size:18px;">—</div>
+        <div class="card-sub" id="sys-sub">—</div>
+        <div class="card-sub" id="sys-sub-2" style="margin-top:2px;">—</div>
+      </div>
+    </div>
+
+    <div class="section-title">Disk volumes</div>
+    <div class="card" style="padding:6px 8px;">
+      <table class="proc-table">
+        <thead><tr><th>Mount</th><th>Type</th><th style="text-align:right;">Used</th><th style="text-align:right;">Total</th></tr></thead>
+        <tbody id="partitions-body"><tr><td colspan="4" style="color:var(--muted);">Waiting for data…</td></tr></tbody>
+      </table>
     </div>
 
     <div class="section-title">Top processes</div>
     <div class="card" style="padding:6px 8px;">
       <table class="proc-table">
-        <thead><tr><th>PID</th><th>Name</th><th style="text-align:right;">CPU</th><th style="text-align:right;">Mem</th></tr></thead>
-        <tbody id="proc-body"><tr><td colspan="4" style="color:var(--muted);">Waiting for data…</td></tr></tbody>
+        <thead><tr><th>PID</th><th>Name</th><th>User</th><th style="text-align:right;">Threads</th><th style="text-align:right;">CPU</th><th style="text-align:right;">Mem</th></tr></thead>
+        <tbody id="proc-body"><tr><td colspan="6" style="color:var(--muted);">Waiting for data…</td></tr></tbody>
       </table>
     </div>
 
@@ -552,7 +570,7 @@
   }
 
   function renderStats(data){
-    document.getElementById('d-hostname').textContent = data.hostname || 'Unknown host';
+    document.getElementById('d-hostname').textContent = data.device_name || data.hostname || 'Unknown host';
     document.getElementById('d-meta').textContent =
       `uptime ${fmtUptime(data.uptime_seconds)} · ${currentHost.replace(/^https?:\/\//,'')}`;
     document.getElementById('footer-right').textContent = new Date(data.timestamp || Date.now()).toLocaleTimeString();
@@ -562,6 +580,11 @@
     document.getElementById('cpu-value').textContent = (cpu.percent ?? 0).toFixed(0) + '%';
     document.getElementById('cpu-cores-label').textContent = cpu.core_count ? `(${cpu.core_count} cores)` : '';
     setBar('cpu-bar', cpu.percent);
+    const cpuSubParts = [];
+    if (cpu.physical_cores) cpuSubParts.push(`${cpu.physical_cores}P/${cpu.core_count ?? '—'}L cores`);
+    if (cpu.freq_current_mhz) cpuSubParts.push(`${(cpu.freq_current_mhz/1000).toFixed(2)} GHz`);
+    if (cpu.load_avg) cpuSubParts.push(`load ${cpu.load_avg.join(', ')}`);
+    document.getElementById('cpu-sub').textContent = cpuSubParts.join(' · ') || '—';
     const coresRow = document.getElementById('cpu-cores');
     const cores = cpu.per_core || [];
     if (cores.length){
@@ -575,25 +598,46 @@
     // RAM
     const ram = data.ram || {};
     document.getElementById('ram-value').textContent = (ram.percent ?? 0).toFixed(0) + '%';
-    document.getElementById('ram-sub').textContent = `${ram.used_gb ?? '—'} / ${ram.total_gb ?? '—'} GB`;
+    document.getElementById('ram-sub').textContent = `${ram.used_gb ?? '—'} / ${ram.total_gb ?? '—'} GB · ${ram.available_gb ?? '—'} GB free`;
     setBar('ram-bar', ram.percent);
+    const swapTotal = ram.swap_total_gb ?? 0;
+    document.getElementById('ram-swap-sub').textContent = swapTotal > 0
+      ? `Swap: ${ram.swap_used_gb ?? 0} / ${swapTotal} GB`
+      : 'Swap: not in use';
 
     // Disk
     const disk = data.disk || {};
     document.getElementById('disk-value').textContent = (disk.percent ?? 0).toFixed(0) + '%';
-    document.getElementById('disk-sub').textContent = `${disk.used_gb ?? '—'} / ${disk.total_gb ?? '—'} GB`;
+    document.getElementById('disk-sub').textContent = `${disk.used_gb ?? '—'} / ${disk.total_gb ?? '—'} GB · ${disk.free_gb ?? '—'} GB free`;
     setBar('disk-bar', disk.percent);
+    const io = disk.io || {};
+    document.getElementById('disk-io-sub').textContent =
+      (io.read_mbps != null || io.write_mbps != null)
+        ? `R ${io.read_mbps ?? 0} MB/s · W ${io.write_mbps ?? 0} MB/s`
+        : '—';
+    const partBody = document.getElementById('partitions-body');
+    const parts = disk.partitions || [];
+    partBody.innerHTML = parts.length ? parts.map(p =>
+      `<tr><td>${escapeHtml(p.mountpoint)}</td><td>${escapeHtml(p.fstype)}</td><td class="num">${p.used_gb} GB</td><td class="num">${p.total_gb} GB</td></tr>`
+    ).join('') : '<tr><td colspan="4" style="color:var(--muted);">No volume data</td></tr>';
 
     // GPU
     const gpus = data.gpu || [];
     if (gpus.length){
       const g = gpus[0];
-      document.getElementById('gpu-value').textContent = (g.load_percent ?? 0).toFixed(0) + '%';
       const extra = gpus.length > 1 ? ` (+${gpus.length - 1} more)` : '';
-      document.getElementById('gpu-sub').textContent =
-        `${g.name || 'GPU'}${extra} · ${g.memory_used_mb ?? '—'}/${g.memory_total_mb ?? '—'} MB` +
-        (g.temperature_c ? ` · ${g.temperature_c}°C` : '');
-      setBar('gpu-bar', g.load_percent);
+      if (g.load_percent == null){
+        document.getElementById('gpu-value').textContent = 'N/A';
+        document.getElementById('gpu-sub').textContent =
+          `${g.name || 'GPU'}${extra}` + (g.unavailable_reason ? ` · ${g.unavailable_reason}` : '');
+        setBar('gpu-bar', 0);
+      } else {
+        document.getElementById('gpu-value').textContent = g.load_percent.toFixed(0) + '%';
+        document.getElementById('gpu-sub').textContent =
+          `${g.name || 'GPU'}${extra} · ${g.memory_used_mb ?? '—'}/${g.memory_total_mb ?? '—'} MB` +
+          (g.temperature_c ? ` · ${g.temperature_c}°C` : '');
+        setBar('gpu-bar', g.load_percent);
+      }
     } else {
       document.getElementById('gpu-value').textContent = 'N/A';
       document.getElementById('gpu-sub').textContent = 'No supported GPU detected';
@@ -602,26 +646,35 @@
 
     // Network
     const net = data.network || {};
-    document.getElementById('net-value').textContent = `↑ ${net.sent_mb ?? 0} MB`;
-    document.getElementById('net-sub').textContent = `↓ ${net.recv_mb ?? 0} MB received`;
+    document.getElementById('net-value').textContent = `↑${net.up_kbps ?? 0} / ↓${net.down_kbps ?? 0} KB/s`;
+    document.getElementById('net-sub').textContent = `Total: ↑ ${net.sent_mb ?? 0} MB · ↓ ${net.recv_mb ?? 0} MB`;
+    document.getElementById('net-rate-sub').textContent = 'Since this server last started';
 
     // Battery
     const battCard = document.getElementById('battery-card');
     if (data.battery){
       battCard.style.display = 'block';
       document.getElementById('batt-value').textContent = data.battery.percent.toFixed(0) + '%';
-      document.getElementById('batt-sub').textContent = data.battery.plugged_in ? 'Plugged in' : 'On battery';
+      const mins = data.battery.minutes_remaining;
+      const timeStr = mins ? ` · ${Math.floor(mins/60)}h ${mins%60}m left` : '';
+      document.getElementById('batt-sub').textContent = (data.battery.plugged_in ? 'Plugged in' : 'On battery') + timeStr;
       setBar('batt-bar', data.battery.percent);
     } else {
       battCard.style.display = 'none';
     }
 
+    // System
+    const sys = data.system || {};
+    document.getElementById('sys-value').textContent = sys.os ? `${sys.os} ${sys.os_version || ''}`.trim() : '—';
+    document.getElementById('sys-sub').textContent = `${sys.arch || '—'}${sys.apple_silicon ? ' (Apple Silicon)' : ''} · ${sys.process_count ?? '—'} processes`;
+    document.getElementById('sys-sub-2').textContent = sys.current_user ? `User: ${sys.current_user}` : '—';
+
     // Top processes
     const procs = data.top_processes || [];
     const body = document.getElementById('proc-body');
     body.innerHTML = procs.length ? procs.map(p =>
-      `<tr><td>${p.pid}</td><td>${escapeHtml(p.name)}</td><td class="num">${p.cpu_percent.toFixed(1)}%</td><td class="num">${p.memory_percent.toFixed(1)}%</td></tr>`
-    ).join('') : '<tr><td colspan="4" style="color:var(--muted);">No process data</td></tr>';
+      `<tr><td>${p.pid}</td><td>${escapeHtml(p.name)}</td><td>${escapeHtml(p.username || '—')}</td><td class="num">${p.num_threads ?? '—'}</td><td class="num">${p.cpu_percent.toFixed(1)}%</td><td class="num">${p.memory_percent.toFixed(1)}%</td></tr>`
+    ).join('') : '<tr><td colspan="6" style="color:var(--muted);">No process data</td></tr>';
 
     // Ollama
     const ollama = data.ollama || { running:false, loaded_models:[] };
